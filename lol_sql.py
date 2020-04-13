@@ -68,7 +68,7 @@ def requestSummonerData(region, summonerName, APIKey):
 
     #Here is how I make my URL.  There are many ways to create these.
     
-    URL = "https://" + region + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=" + APIKey
+    URL = "https://" + region + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + str(summonerName) + "?api_key=" + APIKey
     #print(URL)
     #requests.get is a function given to us my our import "requests". It basically goes to the URL we made and gives us back a JSON.
     response = requests.get(URL)
@@ -98,15 +98,19 @@ def requestMatchInfo(region, matchId, APIKey):
     return response.json()
 
 
-def main():
-	#API key, summoner input, localization
-	region = "EUW1"
-	summonerName = (str)(input('Type your Summoner Name here and DO NOT INCLUDE ANY SPACES: '))
-	APIKey = rg_api_key.riot_api_key
 
-	#This is where the actual code starts===========================================================================
+#API key, summoner input, localization
+APIKey = rg_api_key.riot_api_key
+
+#This is where the actual code starts===========================================================================
+
+
+def main():
 
 	#Import Summoner Data-------------------------------------------------------------------------------------
+	region = "EUW1"
+	summonerName = input('Which Summoner? ').replace(" ","").casefold()
+
 	summonerData = requestSummonerData(region, summonerName, APIKey)
 
 	#catching Error if it is API related, it will pop up with first call of responseJSON
@@ -123,13 +127,30 @@ def main():
 	revisionDate	= summonerData['revisionDate']
 	summonerLevel	= summonerData['summonerLevel']
 
-	#Insert imported SummonerData to SQL Database
-	# cursor.execute("""INSERT INTO Summoner_V4
-	# 					(id , accountId , puuid , name , profileIconId , revisionDate , summonerLevel)
-	# 					VALUES (%s,%s,%s,%s,%s,%s,%s)""",
-	# 					(id , accountId , puuid , name , profileIconId , revisionDate , summonerLevel))
+	#query the DB for existing summonerName entry and save the table
+	getDBsummonerName = """SELECT name FROM Summoner_V4"""
 
-	# connection.commit()
+	cursor.execute(getDBsummonerName)
+
+	dbSumName = cursor.fetchall()
+
+	#Edit list of names so they can be matched easier wich name input
+	dbNameList = []
+	for entry in dbSumName:
+		dbNameList.append(entry[0].replace(" ","").casefold())
+	
+
+	#Check if name is already in DB
+	if summonerName not in dbNameList:
+
+		#Insert imported SummonerData to SQL Database
+		cursor.execute("""INSERT INTO Summoner_V4
+							(id , accountId , puuid , name , profileIconId , revisionDate , summonerLevel)
+							VALUES (%s,%s,%s,%s,%s,%s,%s)""",
+							(id , accountId , puuid , name , profileIconId , revisionDate , summonerLevel))
+
+		connection.commit()
+		print("New Summoner information added")
 
 	#Import matchList Data---------------------------------------------------------------------------------
 

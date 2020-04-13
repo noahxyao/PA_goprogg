@@ -1,3 +1,3 @@
 # Riot API key
 
-riot_api_key = "RGAPI-a3844fff-cb7f-476a-8ee0-4f294d016828"
+riot_api_key = "RGAPI-2f067dc4-5c8f-4009-a3c4-a8dbf0dd139a"
