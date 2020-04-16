@@ -11,7 +11,7 @@ connection = mariadb.connect(user='root', password='123321Almitimo', database='R
 
 cursor = connection.cursor()
 
-summonerName = input("Which Summoner? ")
+summonerName = input("Which Summoner? ") # fix with replace 
 
 getAllPlayerGames = """SELECT * FROM MatchParticipant_V4 WHERE summonerName = """ + "'" +str(summonerName) + "'" + """ GROUP BY gameId
 					ORDER BY `MatchParticipant_V4`.`gameCreation`  DESC"""

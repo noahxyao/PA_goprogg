@@ -3,6 +3,7 @@ import rg_api_key
 import requests
 import json
 import asyncio
+import datetime
 
 
 
@@ -195,7 +196,7 @@ def main():
 
 	# Exit programm if this players data is up to date
 	if len(matchIdList) ==0:
-		print("DB is up to date.")
+		print("DB is up to date.","Time:",datetime.datetime.now())
 		exit()
 
 	for k in range(len(matchIdList)):

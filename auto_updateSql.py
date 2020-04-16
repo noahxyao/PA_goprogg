@@ -2,6 +2,8 @@ import mysql.connector as mariadb
 import rg_api_key
 import requests
 import json
+import time
+import datetime
 import asyncio
 
 
@@ -105,325 +107,338 @@ APIKey = rg_api_key.riot_api_key
 #This is where the actual code starts===========================================================================
 
 
-def main():
+async def main():
 
-	#Import Summoner Data-------------------------------------------------------------------------------------
-	region = "EUW1"
+	while True:
 
-	#query the DB for existing summonerName entry and save the table
-	getDBsummonerName = """SELECT name FROM Summoner_V4"""
+		#Import Summoner Data-------------------------------------------------------------------------------------
+		region = "EUW1"
 
-	cursor.execute(getDBsummonerName)
+		#query the DB for existing summonerName entry and save the table
+		getDBsummonerName = """SELECT name FROM Summoner_V4"""
 
-	dbSumName = cursor.fetchall()
+		cursor.execute(getDBsummonerName)
 
-	#Edit list of names so they can be matched easier wich name input
-	dbNameList = []
-	for entry in dbSumName:
-		dbNameList.append(entry[0].replace(" ","").casefold())
+		dbSumName = cursor.fetchall()
 
-	for summonerName in dbNameList:
-		print("Importing Data for Summoners", dbNameList)
-		print("Importing Data for", summonerName)
+		#Edit list of names so they can be matched easier wich name input
+		dbNameList = []
+		for entry in dbSumName:
+			dbNameList.append(entry[0].replace(" ","").casefold())
 
-		summonerData = requestSummonerData(region, summonerName, APIKey)
+		for summonerName in dbNameList:
+			print("Importing Data for Summoners", dbNameList)
+			print("Importing Data for", summonerName)
 
-		#catching Error if it is API related, it will pop up with first call of responseJSON
-		try:
-			id				= summonerData['id']
-		except KeyError:
-			print("API related Error")
-			exit()
+			summonerData = requestSummonerData(region, summonerName, APIKey)
 
-		accountId 		= summonerData['accountId']
-		puuid 			= summonerData['puuid']
-		name 			= summonerData['name']
-		profileIconId 	= summonerData['profileIconId']
-		revisionDate	= summonerData['revisionDate']
-		summonerLevel	= summonerData['summonerLevel']
-
-		
-		
-
-		#Check if name is already in DB
-		if summonerName not in dbNameList:
-
-			#Insert imported SummonerData to SQL Database
-			cursor.execute("""INSERT INTO Summoner_V4
-								(id , accountId , puuid , name , profileIconId , revisionDate , summonerLevel)
-								VALUES (%s,%s,%s,%s,%s,%s,%s)""",
-								(id , accountId , puuid , name , profileIconId , revisionDate , summonerLevel))
-
-			connection.commit()
-			print("New Summoner information added")
-
-		#Import matchList Data---------------------------------------------------------------------------------
-
-		responseJSONMatchList = requestMatchList(region, summonerData['accountId'], APIKey)
-
-		#get a number of matchIDs of the matchlist JSON and put the matchIDs into a list
-		matchIdList = []
-
-		#Only Update DB with new MatchList entries
-		#query the DB for newest existing entry and save the table
-		getDBPlayerMatchList = """SELECT * FROM MatchList_V4 WHERE accountId = """ + "'" +str(accountId) + "'" + """ GROUP BY gameId
-							ORDER BY `MatchList_V4`.`timestamp`  DESC"""
-
-		cursor.execute(getDBPlayerMatchList)
-
-		DBPlayerMatchList = cursor.fetchall()
-
-		#Check from newest to oldest matches from Riotservers if they exist in newest DB entry and append all new matches into a list
-		for i in range(len(responseJSONMatchList['matches'])):
-
+			#catching Error if it is API related, it will pop up with first call of responseJSON
 			try:
-
-				if responseJSONMatchList['matches'][i]['gameId'] == DBPlayerMatchList[0][2]:
-					print(responseJSONMatchList['matches'][i]['gameId'], " was last new matchId to be imported.")
-					break
-
-				else:
-					
-					matchIdList.append(responseJSONMatchList['matches'][i]['gameId'])
-						
-
-			except IndexError:
-
-				matchIdList.append(responseJSONMatchList['matches'][i]['gameId'])
-
-
-
-
-		#Import match Team Data---------------------------------------------------------------------------------
-
-		# For all matches in matchList, get Data
-
-		# Exit programm if this players data is up to date
-		if len(matchIdList) ==0:
-			print("DB is up to date.")
-			continue
-
-		for k in range(len(matchIdList)):
-
-			#Start importing from oldest
-			matchInfoData = requestMatchInfo(region, matchIdList[len(matchIdList)-k-1], APIKey)
-			print("Importing "+str(matchIdList[len(matchIdList)-k-1])+ " ("+ str((k+1))+ "/"+ str(len(matchIdList))+")")
-
-			# General Game Data
-			try:
-
-				gameId 					= matchInfoData['gameId']
-				platformId 				= matchInfoData['platformId']
-				gameCreation 			= matchInfoData['gameCreation']
-				gameDuration 			= matchInfoData['gameDuration']
-				queueId 				= matchInfoData['queueId']
-				mapId 					= matchInfoData['mapId']
-				seasonId 				= matchInfoData['seasonId']
-				gameVersion 			= matchInfoData['gameVersion']
-				gameMode 				= matchInfoData['gameMode']
-				gameType 				= matchInfoData['gameType']
-
+				id				= summonerData['id']
 			except KeyError:
-				print("Rate Limit reached, try again in 2 min")
-
-			
-
-			#Split into Team Data
-			for i in range(2):
-				teamId 					= matchInfoData['teams'][i]['teamId']
-				win 					= matchInfoData['teams'][i]['win']
-				firstBlood 				= matchInfoData['teams'][i]['firstBlood']
-				firstTower 				= matchInfoData['teams'][i]['firstTower']
-				firstInhibitor 			= matchInfoData['teams'][i]['firstInhibitor']
-				firstBaron 				= matchInfoData['teams'][i]['firstBaron']
-				firstDragon 			= matchInfoData['teams'][i]['firstDragon']
-				firstRiftHerald 		= matchInfoData['teams'][i]['firstRiftHerald']
-				towerKills 				= matchInfoData['teams'][i]['towerKills']
-				inhibitorKills 			= matchInfoData['teams'][i]['inhibitorKills']
-				baronKills 				= matchInfoData['teams'][i]['baronKills']
-				dragonKills 			= matchInfoData['teams'][i]['dragonKills']
-				vilemawKills 			= matchInfoData['teams'][i]['vilemawKills']
-				riftHeraldKills 		= matchInfoData['teams'][i]['riftHeraldKills']
-				dominionVictoryScore 	= matchInfoData['teams'][i]['dominionVictoryScore']
-
-				#Insert imported matchTeamData to SQL Database
-				cursor.execute("""INSERT INTO MatchTeam_V4
-									(gameId, platformId, gameCreation, gameDuration, queueId, mapId, seasonId,
-									gameVersion, gameMode, gameType, teamId, win, firstBlood, firstTower,
-									firstInhibitor, firstBaron, firstDragon, firstRiftHerald, towerKills,
-									inhibitorKills, baronKills, dragonKills, vilemawKills, riftHeraldKills, dominionVictoryScore)
-									VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-									(gameId, platformId, gameCreation, gameDuration, queueId, mapId, seasonId,
-									gameVersion, gameMode, gameType, teamId, win, firstBlood, firstTower,
-									firstInhibitor, firstBaron, firstDragon, firstRiftHerald, towerKills,
-									inhibitorKills, baronKills, dragonKills, vilemawKills, riftHeraldKills, dominionVictoryScore))
-
-				connection.commit()
-				print("Team",i+1, "import Done")
-
-			#Now Matches
-			for player in range(len(matchInfoData['participants'])):
-
-				gameId 					= matchInfoData['gameId']
-				platformId 				= matchInfoData['platformId']
-				gameCreation 			= matchInfoData['gameCreation']
-				gameDuration 			= matchInfoData['gameDuration']
-				queueId 				= matchInfoData['queueId']
-				mapId 					= matchInfoData['mapId']
-				seasonId 				= matchInfoData['seasonId']
-				gameVersion 			= matchInfoData['gameVersion']
-				gameMode 				= matchInfoData['gameMode']
-				gameType 				= matchInfoData['gameType']
-				
-				teamId 			= matchInfoData['participants'][player]['teamId']
-				participantId 	= matchInfoData['participants'][player]['participantId']
-				accountId		= matchInfoData['participantIdentities'][player]['player']['accountId']
-				summonerName 	= matchInfoData['participantIdentities'][player]['player']['summonerName']
-				
-				matchHistoryUri = matchInfoData['participantIdentities'][player]['player']['matchHistoryUri']
-				championId 		= matchInfoData['participants'][player]['championId']
-				spell1Id 		= matchInfoData['participants'][player]['spell1Id']
-				spell2Id 		= matchInfoData['participants'][player]['spell2Id']
-				role 			= matchInfoData['participants'][player]['timeline']['role']
-				lane 			= matchInfoData['participants'][player]['timeline']['lane']
-
-				win 								= matchInfoData['participants'][player]['stats']['win']
-				item0 								= matchInfoData['participants'][player]['stats']['item0']
-				item1 								= matchInfoData['participants'][player]['stats']['item1']
-				item2 								= matchInfoData['participants'][player]['stats']['item2']
-				item3 								= matchInfoData['participants'][player]['stats']['item3']
-				item4 								= matchInfoData['participants'][player]['stats']['item4']
-				item5 								= matchInfoData['participants'][player]['stats']['item5']
-				item6 								= matchInfoData['participants'][player]['stats']['item6']
-				kills 								= matchInfoData['participants'][player]['stats']['kills']
-				deaths 								= matchInfoData['participants'][player]['stats']['deaths']
-				assists 							= matchInfoData['participants'][player]['stats']['assists']
-				largestKillingSpree 				= matchInfoData['participants'][player]['stats']['largestKillingSpree']
-				largestMultiKill 					= matchInfoData['participants'][player]['stats']['largestMultiKill']
-				killingSprees 						= matchInfoData['participants'][player]['stats']['killingSprees']
-				longestTimeSpentLiving 				= matchInfoData['participants'][player]['stats']['longestTimeSpentLiving']
-				doubleKills 						= matchInfoData['participants'][player]['stats']['doubleKills']
-				tripleKills 						= matchInfoData['participants'][player]['stats']['tripleKills']
-				quadraKills 						= matchInfoData['participants'][player]['stats']['quadraKills']
-				pentaKills 							= matchInfoData['participants'][player]['stats']['pentaKills']
-				unrealKills 						= matchInfoData['participants'][player]['stats']['unrealKills']
-				totalDamageDealt 					= matchInfoData['participants'][player]['stats']['totalDamageDealt']
-				magicDamageDealt 					= matchInfoData['participants'][player]['stats']['magicDamageDealt']
-				physicalDamageDealt 				= matchInfoData['participants'][player]['stats']['physicalDamageDealt']
-				trueDamageDealt 					= matchInfoData['participants'][player]['stats']['trueDamageDealt']
-				largestCriticalStrike 				= matchInfoData['participants'][player]['stats']['largestCriticalStrike']
-				totalDamageDealtToChampions 		= matchInfoData['participants'][player]['stats']['totalDamageDealtToChampions']
-				magicDamageDealtToChampions 		= matchInfoData['participants'][player]['stats']['magicDamageDealtToChampions']
-				physicalDamageDealtToChampions 		= matchInfoData['participants'][player]['stats']['physicalDamageDealtToChampions']
-				trueDamageDealtToChampions 			= matchInfoData['participants'][player]['stats']['trueDamageDealtToChampions']
-				totalHeal 							= matchInfoData['participants'][player]['stats']['totalHeal']
-				totalUnitsHealed 					= matchInfoData['participants'][player]['stats']['totalUnitsHealed']
-				damageSelfMitigated 				= matchInfoData['participants'][player]['stats']['damageSelfMitigated']
-				damageDealtToObjectives 			= matchInfoData['participants'][player]['stats']['damageDealtToObjectives']
-				damageDealtToTurrets 				= matchInfoData['participants'][player]['stats']['damageDealtToTurrets']
-				visionScore 						= matchInfoData['participants'][player]['stats']['visionScore']
-				timeCCingOthers 					= matchInfoData['participants'][player]['stats']['timeCCingOthers']
-				totalDamageTaken 					= matchInfoData['participants'][player]['stats']['totalDamageTaken']
-				magicalDamageTaken 					= matchInfoData['participants'][player]['stats']['magicalDamageTaken']
-				physicalDamageTaken 				= matchInfoData['participants'][player]['stats']['physicalDamageTaken']
-				trueDamageTaken 					= matchInfoData['participants'][player]['stats']['trueDamageTaken']
-				goldEarned 							= matchInfoData['participants'][player]['stats']['goldEarned']
-				goldSpent 							= matchInfoData['participants'][player]['stats']['goldSpent']
-				turretKills 						= matchInfoData['participants'][player]['stats']['turretKills']
-				inhibitorKills 						= matchInfoData['participants'][player]['stats']['inhibitorKills']
-				totalMinionsKilled 					= matchInfoData['participants'][player]['stats']['totalMinionsKilled']
-				neutralMinionsKilled 				= matchInfoData['participants'][player]['stats']['neutralMinionsKilled']
-				
-				totalTimeCrowdControlDealt 			= matchInfoData['participants'][player]['stats']['totalTimeCrowdControlDealt']
-				champLevel 							= matchInfoData['participants'][player]['stats']['champLevel']
-				visionWardsBoughtInGame 			= matchInfoData['participants'][player]['stats']['visionWardsBoughtInGame']
-				sightWardsBoughtInGame 				= matchInfoData['participants'][player]['stats']['sightWardsBoughtInGame']
-				
-
-				try:
-					firstInhibitorKill 					= matchInfoData['participants'][player]['stats']['firstInhibitorKill']
-					firstInhibitorAssist 				= matchInfoData['participants'][player]['stats']['firstInhibitorAssist']
-					neutralMinionsKilledTeamJungle 		= matchInfoData['participants'][player]['stats']['neutralMinionsKilledTeamJungle']
-					neutralMinionsKilledEnemyJungle 	= matchInfoData['participants'][player]['stats']['neutralMinionsKilledEnemyJungle']
-					wardsPlaced 						= matchInfoData['participants'][player]['stats']['wardsPlaced']
-					wardsKilled 						= matchInfoData['participants'][player]['stats']['wardsKilled']
-					summonerId 							= matchInfoData['participantIdentities'][player]['player']['summonerId']
-					firstTowerKill 						= matchInfoData['participants'][player]['stats']['firstTowerKill']
-					firstTowerAssist 					= matchInfoData['participants'][player]['stats']['firstTowerAssist']
-					firstBloodKill 						= matchInfoData['participants'][player]['stats']['firstBloodKill']
-					firstBloodAssist 					= matchInfoData['participants'][player]['stats']['firstBloodAssist']
-				except KeyError:
-					firstInhibitorKill 					= False
-					firstInhibitorAssist 				= False
-					neutralMinionsKilledTeamJungle 		= 0
-					neutralMinionsKilledEnemyJungle 	= 0
-					wardsPlaced 						= 0
-					wardsKilled 						= 0
-					summonerId 							= ""
-					firstTowerKill 						= False
-					firstTowerAssist 					= False
-					firstBloodKill 						= False
-					firstBloodAssist 					= False
-
-				#Insert imported matchParticipant Data to SQL Database
-				cursor.execute("""INSERT INTO MatchParticipant_V4
-									(gameId, platformId, gameCreation, gameDuration, queueId, mapId, seasonId, gameVersion,
-									gameMode, gameType, teamId, participantId, accountId, summonerName, summonerId,
-									matchHistoryUri, championId, spell1Id, spell2Id, role, lane, win, item0, item1,
-									item2, item3, item4, item5, item6, kills, deaths, assists, largestKillingSpree, largestMultiKill,
-									killingSprees, longestTimeSpentLiving, doubleKills, tripleKills, quadraKills, pentaKills,
-									unrealKills, totalDamageDealt, magicDamageDealt, physicalDamageDealt, trueDamageDealt,
-									largestCriticalStrike, totalDamageDealtToChampions, magicDamageDealtToChampions,
-									physicalDamageDealtToChampions, trueDamageDealtToChampions, totalHeal, totalUnitsHealed,
-									damageSelfMitigated, damageDealtToObjectives, damageDealtToTurrets, visionScore,
-									timeCCingOthers, totalDamageTaken, magicalDamageTaken, physicalDamageTaken, trueDamageTaken,
-									goldEarned, goldSpent, turretKills, inhibitorKills, totalMinionsKilled, neutralMinionsKilled,
-									neutralMinionsKilledTeamJungle, neutralMinionsKilledEnemyJungle, totalTimeCrowdControlDealt,
-									champLevel, visionWardsBoughtInGame, sightWardsBoughtInGame, wardsPlaced, wardsKilled, firstBloodKill,
-									firstBloodAssist, firstTowerKill, firstTowerAssist, firstInhibitorKill, firstInhibitorAssist)
-									VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-									%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-									%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-									(gameId, platformId, gameCreation, gameDuration, queueId, mapId, seasonId, gameVersion,
-									gameMode, gameType, teamId, participantId, accountId, summonerName, summonerId,
-									matchHistoryUri, championId, spell1Id, spell2Id, role, lane, win, item0, item1,
-									item2, item3, item4, item5, item6, kills, deaths, assists, largestKillingSpree, largestMultiKill,
-									killingSprees, longestTimeSpentLiving, doubleKills, tripleKills, quadraKills, pentaKills,
-									unrealKills, totalDamageDealt, magicDamageDealt, physicalDamageDealt, trueDamageDealt,
-									largestCriticalStrike, totalDamageDealtToChampions, magicDamageDealtToChampions,
-									physicalDamageDealtToChampions, trueDamageDealtToChampions, totalHeal, totalUnitsHealed,
-									damageSelfMitigated, damageDealtToObjectives, damageDealtToTurrets, visionScore,
-									timeCCingOthers, totalDamageTaken, magicalDamageTaken, physicalDamageTaken, trueDamageTaken,
-									goldEarned, goldSpent, turretKills, inhibitorKills, totalMinionsKilled, neutralMinionsKilled,
-									neutralMinionsKilledTeamJungle, neutralMinionsKilledEnemyJungle, totalTimeCrowdControlDealt,
-									champLevel, visionWardsBoughtInGame, sightWardsBoughtInGame, wardsPlaced, wardsKilled, firstBloodKill,
-									firstBloodAssist, firstTowerKill, firstTowerAssist, firstInhibitorKill, firstInhibitorAssist))
-
-				connection.commit()
-			print("Match Data Import Done")
-
-			print("Match List Import: ", matchIdList[len(matchIdList)-k-1])
+				print("API related Error")
+				exit()
 
 			accountId 		= summonerData['accountId']
-			platformId 		= responseJSONMatchList['matches'][len(matchIdList)-k-1]['platformId']
-			gameId 			= responseJSONMatchList['matches'][len(matchIdList)-k-1]['gameId']
-			champion 		= responseJSONMatchList['matches'][len(matchIdList)-k-1]['champion']
-			queue 			= responseJSONMatchList['matches'][len(matchIdList)-k-1]['queue']
-			season 			= responseJSONMatchList['matches'][len(matchIdList)-k-1]['season']
-			timestamp 		= responseJSONMatchList['matches'][len(matchIdList)-k-1]['timestamp']
-			role 			= responseJSONMatchList['matches'][len(matchIdList)-k-1]['role']
-			lane 			= responseJSONMatchList['matches'][len(matchIdList)-k-1]['lane']
+			puuid 			= summonerData['puuid']
+			name 			= summonerData['name']
+			profileIconId 	= summonerData['profileIconId']
+			revisionDate	= summonerData['revisionDate']
+			summonerLevel	= summonerData['summonerLevel']
 
-			#Insert imported responseJSONMatchList to SQL Database
-			cursor.execute("""INSERT INTO MatchList_V4
-								(accountId, platformId , gameId , champion , queue , season , timestamp , role, lane)
-								VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-								(accountId, platformId , gameId , champion , queue , season , timestamp , role, lane))
+			
+			
 
-			connection.commit()
+			#Check if name is already in DB
+			if summonerName not in dbNameList:
 
-		
+				#Insert imported SummonerData to SQL Database
+				cursor.execute("""INSERT INTO Summoner_V4
+									(id , accountId , puuid , name , profileIconId , revisionDate , summonerLevel)
+									VALUES (%s,%s,%s,%s,%s,%s,%s)""",
+									(id , accountId , puuid , name , profileIconId , revisionDate , summonerLevel))
+
+				connection.commit()
+				print("New Summoner information added")
+
+			#Import matchList Data---------------------------------------------------------------------------------
+
+			responseJSONMatchList = requestMatchList(region, summonerData['accountId'], APIKey)
+
+			#get a number of matchIDs of the matchlist JSON and put the matchIDs into a list
+			matchIdList = []
+
+			#Only Update DB with new MatchList entries
+			#query the DB for newest existing entry and save the table
+			getDBPlayerMatchList = """SELECT * FROM MatchList_V4 WHERE accountId = """ + "'" +str(accountId) + "'" + """ GROUP BY gameId
+								ORDER BY `MatchList_V4`.`timestamp`  DESC"""
+
+			cursor.execute(getDBPlayerMatchList)
+
+			DBPlayerMatchList = cursor.fetchall()
+
+			#Check from newest to oldest matches from Riotservers if they exist in newest DB entry and append all new matches into a list
+			for i in range(len(responseJSONMatchList['matches'])):
+
+				try:
+
+					if responseJSONMatchList['matches'][i]['gameId'] == DBPlayerMatchList[0][2]:
+						print(responseJSONMatchList['matches'][i]['gameId'], " was last new matchId to be imported.")
+						break
+
+					else:
+						
+						matchIdList.append(responseJSONMatchList['matches'][i]['gameId'])
+							
+
+				except IndexError:
+
+					matchIdList.append(responseJSONMatchList['matches'][i]['gameId'])
 
 
-main()
+
+
+			#Import match Team Data---------------------------------------------------------------------------------
+
+			# For all matches in matchList, get Data
+
+			# Exit programm if this players data is up to date
+			if len(matchIdList) ==0:
+				print("DB is up to date.","Time:",datetime.datetime.now())
+				continue
+
+			for k in range(len(matchIdList)):
+
+				#Start importing from oldest
+				matchInfoData = requestMatchInfo(region, matchIdList[len(matchIdList)-k-1], APIKey)
+				print("Importing "+str(matchIdList[len(matchIdList)-k-1])+ " ("+ str((k+1))+ "/"+ str(len(matchIdList))+")")
+
+				# General Game Data
+				try:
+
+					gameId 					= matchInfoData['gameId']
+					platformId 				= matchInfoData['platformId']
+					gameCreation 			= matchInfoData['gameCreation']
+					gameDuration 			= matchInfoData['gameDuration']
+					queueId 				= matchInfoData['queueId']
+					mapId 					= matchInfoData['mapId']
+					seasonId 				= matchInfoData['seasonId']
+					gameVersion 			= matchInfoData['gameVersion']
+					gameMode 				= matchInfoData['gameMode']
+					gameType 				= matchInfoData['gameType']
+
+				except KeyError:
+					print("Rate Limit reached, try again in 2 min")
+
+				
+
+				#Split into Team Data
+				for i in range(2):
+					teamId 					= matchInfoData['teams'][i]['teamId']
+					win 					= matchInfoData['teams'][i]['win']
+					firstBlood 				= matchInfoData['teams'][i]['firstBlood']
+					firstTower 				= matchInfoData['teams'][i]['firstTower']
+					firstInhibitor 			= matchInfoData['teams'][i]['firstInhibitor']
+					firstBaron 				= matchInfoData['teams'][i]['firstBaron']
+					firstDragon 			= matchInfoData['teams'][i]['firstDragon']
+					firstRiftHerald 		= matchInfoData['teams'][i]['firstRiftHerald']
+					towerKills 				= matchInfoData['teams'][i]['towerKills']
+					inhibitorKills 			= matchInfoData['teams'][i]['inhibitorKills']
+					baronKills 				= matchInfoData['teams'][i]['baronKills']
+					dragonKills 			= matchInfoData['teams'][i]['dragonKills']
+					vilemawKills 			= matchInfoData['teams'][i]['vilemawKills']
+					riftHeraldKills 		= matchInfoData['teams'][i]['riftHeraldKills']
+					dominionVictoryScore 	= matchInfoData['teams'][i]['dominionVictoryScore']
+
+					#Insert imported matchTeamData to SQL Database
+					cursor.execute("""INSERT INTO MatchTeam_V4
+										(gameId, platformId, gameCreation, gameDuration, queueId, mapId, seasonId,
+										gameVersion, gameMode, gameType, teamId, win, firstBlood, firstTower,
+										firstInhibitor, firstBaron, firstDragon, firstRiftHerald, towerKills,
+										inhibitorKills, baronKills, dragonKills, vilemawKills, riftHeraldKills, dominionVictoryScore)
+										VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+										(gameId, platformId, gameCreation, gameDuration, queueId, mapId, seasonId,
+										gameVersion, gameMode, gameType, teamId, win, firstBlood, firstTower,
+										firstInhibitor, firstBaron, firstDragon, firstRiftHerald, towerKills,
+										inhibitorKills, baronKills, dragonKills, vilemawKills, riftHeraldKills, dominionVictoryScore))
+
+					connection.commit()
+					print("Team",i+1, "import Done")
+
+				#Now Matches
+				for player in range(len(matchInfoData['participants'])):
+
+					gameId 					= matchInfoData['gameId']
+					platformId 				= matchInfoData['platformId']
+					gameCreation 			= matchInfoData['gameCreation']
+					gameDuration 			= matchInfoData['gameDuration']
+					queueId 				= matchInfoData['queueId']
+					mapId 					= matchInfoData['mapId']
+					seasonId 				= matchInfoData['seasonId']
+					gameVersion 			= matchInfoData['gameVersion']
+					gameMode 				= matchInfoData['gameMode']
+					gameType 				= matchInfoData['gameType']
+					
+					teamId 			= matchInfoData['participants'][player]['teamId']
+					participantId 	= matchInfoData['participants'][player]['participantId']
+					accountId		= matchInfoData['participantIdentities'][player]['player']['accountId']
+					summonerName 	= matchInfoData['participantIdentities'][player]['player']['summonerName']
+					
+					matchHistoryUri = matchInfoData['participantIdentities'][player]['player']['matchHistoryUri']
+					championId 		= matchInfoData['participants'][player]['championId']
+					spell1Id 		= matchInfoData['participants'][player]['spell1Id']
+					spell2Id 		= matchInfoData['participants'][player]['spell2Id']
+					role 			= matchInfoData['participants'][player]['timeline']['role']
+					lane 			= matchInfoData['participants'][player]['timeline']['lane']
+
+					win 								= matchInfoData['participants'][player]['stats']['win']
+					item0 								= matchInfoData['participants'][player]['stats']['item0']
+					item1 								= matchInfoData['participants'][player]['stats']['item1']
+					item2 								= matchInfoData['participants'][player]['stats']['item2']
+					item3 								= matchInfoData['participants'][player]['stats']['item3']
+					item4 								= matchInfoData['participants'][player]['stats']['item4']
+					item5 								= matchInfoData['participants'][player]['stats']['item5']
+					item6 								= matchInfoData['participants'][player]['stats']['item6']
+					kills 								= matchInfoData['participants'][player]['stats']['kills']
+					deaths 								= matchInfoData['participants'][player]['stats']['deaths']
+					assists 							= matchInfoData['participants'][player]['stats']['assists']
+					largestKillingSpree 				= matchInfoData['participants'][player]['stats']['largestKillingSpree']
+					largestMultiKill 					= matchInfoData['participants'][player]['stats']['largestMultiKill']
+					killingSprees 						= matchInfoData['participants'][player]['stats']['killingSprees']
+					longestTimeSpentLiving 				= matchInfoData['participants'][player]['stats']['longestTimeSpentLiving']
+					doubleKills 						= matchInfoData['participants'][player]['stats']['doubleKills']
+					tripleKills 						= matchInfoData['participants'][player]['stats']['tripleKills']
+					quadraKills 						= matchInfoData['participants'][player]['stats']['quadraKills']
+					pentaKills 							= matchInfoData['participants'][player]['stats']['pentaKills']
+					unrealKills 						= matchInfoData['participants'][player]['stats']['unrealKills']
+					totalDamageDealt 					= matchInfoData['participants'][player]['stats']['totalDamageDealt']
+					magicDamageDealt 					= matchInfoData['participants'][player]['stats']['magicDamageDealt']
+					physicalDamageDealt 				= matchInfoData['participants'][player]['stats']['physicalDamageDealt']
+					trueDamageDealt 					= matchInfoData['participants'][player]['stats']['trueDamageDealt']
+					largestCriticalStrike 				= matchInfoData['participants'][player]['stats']['largestCriticalStrike']
+					totalDamageDealtToChampions 		= matchInfoData['participants'][player]['stats']['totalDamageDealtToChampions']
+					magicDamageDealtToChampions 		= matchInfoData['participants'][player]['stats']['magicDamageDealtToChampions']
+					physicalDamageDealtToChampions 		= matchInfoData['participants'][player]['stats']['physicalDamageDealtToChampions']
+					trueDamageDealtToChampions 			= matchInfoData['participants'][player]['stats']['trueDamageDealtToChampions']
+					totalHeal 							= matchInfoData['participants'][player]['stats']['totalHeal']
+					totalUnitsHealed 					= matchInfoData['participants'][player]['stats']['totalUnitsHealed']
+					damageSelfMitigated 				= matchInfoData['participants'][player]['stats']['damageSelfMitigated']
+					damageDealtToObjectives 			= matchInfoData['participants'][player]['stats']['damageDealtToObjectives']
+					damageDealtToTurrets 				= matchInfoData['participants'][player]['stats']['damageDealtToTurrets']
+					visionScore 						= matchInfoData['participants'][player]['stats']['visionScore']
+					timeCCingOthers 					= matchInfoData['participants'][player]['stats']['timeCCingOthers']
+					totalDamageTaken 					= matchInfoData['participants'][player]['stats']['totalDamageTaken']
+					magicalDamageTaken 					= matchInfoData['participants'][player]['stats']['magicalDamageTaken']
+					physicalDamageTaken 				= matchInfoData['participants'][player]['stats']['physicalDamageTaken']
+					trueDamageTaken 					= matchInfoData['participants'][player]['stats']['trueDamageTaken']
+					goldEarned 							= matchInfoData['participants'][player]['stats']['goldEarned']
+					goldSpent 							= matchInfoData['participants'][player]['stats']['goldSpent']
+					turretKills 						= matchInfoData['participants'][player]['stats']['turretKills']
+					inhibitorKills 						= matchInfoData['participants'][player]['stats']['inhibitorKills']
+					totalMinionsKilled 					= matchInfoData['participants'][player]['stats']['totalMinionsKilled']
+					neutralMinionsKilled 				= matchInfoData['participants'][player]['stats']['neutralMinionsKilled']
+					
+					totalTimeCrowdControlDealt 			= matchInfoData['participants'][player]['stats']['totalTimeCrowdControlDealt']
+					champLevel 							= matchInfoData['participants'][player]['stats']['champLevel']
+					visionWardsBoughtInGame 			= matchInfoData['participants'][player]['stats']['visionWardsBoughtInGame']
+					sightWardsBoughtInGame 				= matchInfoData['participants'][player]['stats']['sightWardsBoughtInGame']
+					
+
+					try:
+						firstInhibitorKill 					= matchInfoData['participants'][player]['stats']['firstInhibitorKill']
+						firstInhibitorAssist 				= matchInfoData['participants'][player]['stats']['firstInhibitorAssist']
+						neutralMinionsKilledTeamJungle 		= matchInfoData['participants'][player]['stats']['neutralMinionsKilledTeamJungle']
+						neutralMinionsKilledEnemyJungle 	= matchInfoData['participants'][player]['stats']['neutralMinionsKilledEnemyJungle']
+						wardsPlaced 						= matchInfoData['participants'][player]['stats']['wardsPlaced']
+						wardsKilled 						= matchInfoData['participants'][player]['stats']['wardsKilled']
+						summonerId 							= matchInfoData['participantIdentities'][player]['player']['summonerId']
+						firstTowerKill 						= matchInfoData['participants'][player]['stats']['firstTowerKill']
+						firstTowerAssist 					= matchInfoData['participants'][player]['stats']['firstTowerAssist']
+						firstBloodKill 						= matchInfoData['participants'][player]['stats']['firstBloodKill']
+						firstBloodAssist 					= matchInfoData['participants'][player]['stats']['firstBloodAssist']
+					except KeyError:
+						firstInhibitorKill 					= False
+						firstInhibitorAssist 				= False
+						neutralMinionsKilledTeamJungle 		= 0
+						neutralMinionsKilledEnemyJungle 	= 0
+						wardsPlaced 						= 0
+						wardsKilled 						= 0
+						summonerId 							= ""
+						firstTowerKill 						= False
+						firstTowerAssist 					= False
+						firstBloodKill 						= False
+						firstBloodAssist 					= False
+
+					#Insert imported matchParticipant Data to SQL Database
+					cursor.execute("""INSERT INTO MatchParticipant_V4
+										(gameId, platformId, gameCreation, gameDuration, queueId, mapId, seasonId, gameVersion,
+										gameMode, gameType, teamId, participantId, accountId, summonerName, summonerId,
+										matchHistoryUri, championId, spell1Id, spell2Id, role, lane, win, item0, item1,
+										item2, item3, item4, item5, item6, kills, deaths, assists, largestKillingSpree, largestMultiKill,
+										killingSprees, longestTimeSpentLiving, doubleKills, tripleKills, quadraKills, pentaKills,
+										unrealKills, totalDamageDealt, magicDamageDealt, physicalDamageDealt, trueDamageDealt,
+										largestCriticalStrike, totalDamageDealtToChampions, magicDamageDealtToChampions,
+										physicalDamageDealtToChampions, trueDamageDealtToChampions, totalHeal, totalUnitsHealed,
+										damageSelfMitigated, damageDealtToObjectives, damageDealtToTurrets, visionScore,
+										timeCCingOthers, totalDamageTaken, magicalDamageTaken, physicalDamageTaken, trueDamageTaken,
+										goldEarned, goldSpent, turretKills, inhibitorKills, totalMinionsKilled, neutralMinionsKilled,
+										neutralMinionsKilledTeamJungle, neutralMinionsKilledEnemyJungle, totalTimeCrowdControlDealt,
+										champLevel, visionWardsBoughtInGame, sightWardsBoughtInGame, wardsPlaced, wardsKilled, firstBloodKill,
+										firstBloodAssist, firstTowerKill, firstTowerAssist, firstInhibitorKill, firstInhibitorAssist)
+										VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+										%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+										%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+										(gameId, platformId, gameCreation, gameDuration, queueId, mapId, seasonId, gameVersion,
+										gameMode, gameType, teamId, participantId, accountId, summonerName, summonerId,
+										matchHistoryUri, championId, spell1Id, spell2Id, role, lane, win, item0, item1,
+										item2, item3, item4, item5, item6, kills, deaths, assists, largestKillingSpree, largestMultiKill,
+										killingSprees, longestTimeSpentLiving, doubleKills, tripleKills, quadraKills, pentaKills,
+										unrealKills, totalDamageDealt, magicDamageDealt, physicalDamageDealt, trueDamageDealt,
+										largestCriticalStrike, totalDamageDealtToChampions, magicDamageDealtToChampions,
+										physicalDamageDealtToChampions, trueDamageDealtToChampions, totalHeal, totalUnitsHealed,
+										damageSelfMitigated, damageDealtToObjectives, damageDealtToTurrets, visionScore,
+										timeCCingOthers, totalDamageTaken, magicalDamageTaken, physicalDamageTaken, trueDamageTaken,
+										goldEarned, goldSpent, turretKills, inhibitorKills, totalMinionsKilled, neutralMinionsKilled,
+										neutralMinionsKilledTeamJungle, neutralMinionsKilledEnemyJungle, totalTimeCrowdControlDealt,
+										champLevel, visionWardsBoughtInGame, sightWardsBoughtInGame, wardsPlaced, wardsKilled, firstBloodKill,
+										firstBloodAssist, firstTowerKill, firstTowerAssist, firstInhibitorKill, firstInhibitorAssist))
+
+					connection.commit()
+				print("Match Data Import Done")
+
+				print("Match List Import: ", matchIdList[len(matchIdList)-k-1])
+
+				accountId 		= summonerData['accountId']
+				platformId 		= responseJSONMatchList['matches'][len(matchIdList)-k-1]['platformId']
+				gameId 			= responseJSONMatchList['matches'][len(matchIdList)-k-1]['gameId']
+				champion 		= responseJSONMatchList['matches'][len(matchIdList)-k-1]['champion']
+				queue 			= responseJSONMatchList['matches'][len(matchIdList)-k-1]['queue']
+				season 			= responseJSONMatchList['matches'][len(matchIdList)-k-1]['season']
+				timestamp 		= responseJSONMatchList['matches'][len(matchIdList)-k-1]['timestamp']
+				role 			= responseJSONMatchList['matches'][len(matchIdList)-k-1]['role']
+				lane 			= responseJSONMatchList['matches'][len(matchIdList)-k-1]['lane']
+
+				#Insert imported responseJSONMatchList to SQL Database
+				cursor.execute("""INSERT INTO MatchList_V4
+									(accountId, platformId , gameId , champion , queue , season , timestamp , role, lane)
+									VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+									(accountId, platformId , gameId , champion , queue , season , timestamp , role, lane))
+
+				connection.commit()
+
+		await asyncio.sleep(600)
+			
+loop = asyncio.get_event_loop()
+
+try:
+	asyncio.ensure_future(main())
+	loop.run_forever()
+except KeyboardInterrupt:
+	pass
+
+finally:
+	print("Closing Loop")
+	loop.close()
+
+# main()
 
