@@ -1,6 +1,5 @@
 import mysql.connector as mariadb
 import requests
-from statistics import mean
 import numpy
 
 
