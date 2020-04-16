@@ -30,17 +30,26 @@
       <figure class="image is-64x64">
         <img src="https://i1.sndcdn.com/artworks-000028054782-24d89t-t500x500.jpg" alt="Image">
       </figure>
+      <p>
+        <strong>{{key.summonerName}}</strong>
+      </p>
     </div>
     <div class="media-content">
       <div class="content">
         <p>
-          <strong>{{key.queueType}}</strong> <small>{{key.tier}}</small> <small>{{key.rank}}</small>
+          <strong>{{key.queueType}}</strong>
           <br>
-         {{key.summonerName}}
+          <small>{{key.tier}}</small> <small>{{key.rank}}</small>
+          <br>
+            <small>League Points: {{key.leaguePoints}}</small>
+          <br>
+            <small>Wins: {{key.wins}}</small>
+          <br>
+            <small>Losses: {{key.losses}}</small>
+          <br>
+          <a href="https://euw.op.gg/summoner/userName=exkira">OP.GG</a>
          <br>
-         <a href="{{key.url}}">{{key.url}}</a>
-         <br>
-         League Points: {{key.leaguePoints}}
+
         </p>
       </div>
     </div>

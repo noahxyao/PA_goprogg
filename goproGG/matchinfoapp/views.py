@@ -21,7 +21,7 @@ def requestRankedData(region, ID, APIKey):
 
 region = "EUW1"
 summonerName = 'minras'
-APIKey = 'RGAPI-08c6b915-b768-40de-a49a-c76bf87c13fa'
+APIKey = 'RGAPI-d2338c5a-8795-4ef8-8208-d50c72f14b54'
 
 #I send these three pieces off to my requestData function which will create the URL and give me back a JSON that has the ID for that specific summoner.
 #Once again, what requestData returns is a JSON.
