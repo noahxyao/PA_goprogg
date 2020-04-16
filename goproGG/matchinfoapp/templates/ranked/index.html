@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ranked Game Data: Exkira</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+<body>
+<section class="hero is-medium is-primary is-bold">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        Ranked Game Data: Exkira
+      </h1>
+      <h2 class="subtitle">
+        Wins and Losses in Ranked Queues
+      </h2>
+    </div>
+  </div>
+</section>
+<div class="container">
+<div class=columns>
+<div class="column">
+<div class="box">
+		{% for key in data %}
+  <article class="media">
+    <div class="media-left">
+      <figure class="image is-64x64">
+        <img src="https://i1.sndcdn.com/artworks-000028054782-24d89t-t500x500.jpg" alt="Image">
+      </figure>
+    </div>
+    <div class="media-content">
+      <div class="content">
+        <p>
+          <strong>{{key.queueType}}</strong> <small>{{key.tier}}</small> <small>{{key.rank}}</small>
+          <br>
+         {{key.summonerName}}
+         <br>
+         <a href="{{key.url}}">{{key.url}}</a>
+         <br>
+         League Points: {{key.leaguePoints}}
+        </p>
+      </div>
+    </div>
+  </article>
+		{%endfor%}
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
