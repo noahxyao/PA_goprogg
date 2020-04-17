@@ -21,7 +21,7 @@ def requestRankedData(region, ID, APIKey):
 
 region = "EUW1"
 summonerName = 'minras'
-APIKey = 'RGAPI-d2338c5a-8795-4ef8-8208-d50c72f14b54'
+APIKey = 'RGAPI-5ce56dc3-016b-43e7-bef0-5430081d600f'
 
 #I send these three pieces off to my requestData function which will create the URL and give me back a JSON that has the ID for that specific summoner.
 #Once again, what requestData returns is a JSON.
@@ -37,4 +37,4 @@ responseJSON2 = requestRankedData(region, ID, APIKey)
 
 def index(request):
 	
-	return render(request, 'ranked/index.html', {'data':responseJSON2})
+	return render(request, 'ranked/index.html', {'data':responseJSON, 'data2':responseJSON2})
