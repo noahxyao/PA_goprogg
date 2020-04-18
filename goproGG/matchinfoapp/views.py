@@ -1,40 +1,70 @@
 from django.shortcuts import render
 import requests
+from datetime import datetime
+from .models import Summoner
+from .forms import SummonerForm
 
 def requestSummonerData(region, summonerName, APIKey):
-
-    #Here is how I make my URL.  There are many ways to create these.
-    
-    URL = "https://" + region + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=" + APIKey
-    #print(URL)
-    #requests.get is a function given to us my our import "requests". It basically goes to the URL we made and gives us back a JSON.
+    URL = "https://" + str(region) + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + str(summonerName).replace(" ","").casefold() + "?api_key=" + str(APIKey)
     response = requests.get(URL)
-    #Here I return the JSON we just got.
     return response.json()
 
 def requestRankedData(region, ID, APIKey):
-    URL = "https://" + region + ".api.riotgames.com/lol/league/v4/entries/by-summoner/" + ID + "?api_key=" + APIKey
-    #print(URL)
+    URL = "https://" + str(region) + ".api.riotgames.com/lol/league/v4/entries/by-summoner/" + str(ID) + "?api_key=" + str(APIKey)
     response = requests.get(URL)
     return response.json()
 
 
 region = "EUW1"
-summonerName = 'minras'
-APIKey = 'RGAPI-5ce56dc3-016b-43e7-bef0-5430081d600f'
+APIKey = 'RGAPI-3096676e-5537-4bb8-ab90-260a3b91a86b'
 
-#I send these three pieces off to my requestData function which will create the URL and give me back a JSON that has the ID for that specific summoner.
-#Once again, what requestData returns is a JSON.
-responseJSON  = requestSummonerData(region, summonerName, APIKey)
-
-#print (responseJSON)
-
-ID = responseJSON['id']
-ID = str(ID)
-#print (ID)
-responseJSON2 = requestRankedData(region, ID, APIKey)
 
 
 def index(request):
-	
-	return render(request, 'ranked/index.html', {'data':responseJSON, 'data2':responseJSON2})
+    summonerNameList = Summoner.objects.all() #['minras', 'exkira', 'eksrag']  # return all summoners in django database created in models
+    # Form: POST related
+    if request.method == 'POST':  # only true if form is submitted
+        form = SummonerForm(request.POST)  # add actual request data to form for processing
+        form.save()  # will validate and save if validate
+
+    # Form
+    form = SummonerForm()
+
+    summoner_data = []
+
+    for summonerName in summonerNameList:
+        responseSummonerData = requestSummonerData(region, summonerName.name, APIKey)
+        ID = responseSummonerData['id']
+        responseRankedData = requestRankedData(region, ID, APIKey)
+
+        # Get hours since last game
+        lastGamePlayedDate = responseSummonerData['revisionDate'] / 1000.00
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        then = datetime.fromtimestamp(lastGamePlayedDate).strftime('%Y-%m-%d %H:%M:%S')
+        diff = datetime.strptime(now, '%Y-%m-%d %H:%M:%S') - datetime.strptime(then, '%Y-%m-%d %H:%M:%S')
+        diff_sec = diff.total_seconds()
+        lastGamePlayed = diff_sec // 3600
+
+        summoner = {
+            'name': responseSummonerData['name'],
+            'id': responseSummonerData['id'],
+            'accountId': responseSummonerData['accountId'],
+            'puuid': responseSummonerData['puuid'],
+            'profileIconId': responseSummonerData['profileIconId'],
+            'revisionDate': responseSummonerData['revisionDate'],
+            'summonerLevel': responseSummonerData['summonerLevel']
+        }
+
+        summoner_data.append(summoner)  # add the data for current summoner into our list
+
+
+    # All Variables in one place
+    context = {
+        'data': responseSummonerData,
+        'data2': responseRankedData,
+        'lastGamePlayed': lastGamePlayed,
+        'form': form,
+        'summoner_data': summoner_data
+    }
+
+    return render(request, 'ranked/weather_index.html', context)
