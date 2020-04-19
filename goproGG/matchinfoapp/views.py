@@ -16,7 +16,7 @@ def requestRankedData(region, ID, APIKey):
 
 
 region = "EUW1"
-APIKey = 'RGAPI-3096676e-5537-4bb8-ab90-260a3b91a86b'
+APIKey = 'RGAPI-a84d98d6-747a-4382-bee5-3a024dd98f50'
 
 
 
@@ -43,7 +43,7 @@ def index(request):
         then = datetime.fromtimestamp(lastGamePlayedDate).strftime('%Y-%m-%d %H:%M:%S')
         diff = datetime.strptime(now, '%Y-%m-%d %H:%M:%S') - datetime.strptime(then, '%Y-%m-%d %H:%M:%S')
         diff_sec = diff.total_seconds()
-        lastGamePlayed = diff_sec // 3600
+        lastGamePlayed = int(diff_sec // 3600)
 
         summoner = {
             'name': responseSummonerData['name'],
@@ -67,4 +67,4 @@ def index(request):
         'summoner_data': summoner_data
     }
 
-    return render(request, 'ranked/weather_index.html', context)
+    return render(request, 'ranked/cheatsheet_index.html', context)
