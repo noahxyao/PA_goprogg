@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Summoner
+from .models import SummonerV4
 
 # Register your models here.
-admin.site.register(Summoner)
+admin.site.register(SummonerV4)

@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.shortcuts import render
 import requests
 from datetime import datetime
-from .models import Summoner
+from .models_old import Summoner
 from .forms import SummonerForm
 
 # Create your tests here.

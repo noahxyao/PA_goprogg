@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import requests
 from datetime import datetime
-from .models import Summoner
+from .models import SummonerV4
 from .forms import SummonerForm
 
 def requestSummonerData(region, summonerName, APIKey):
@@ -21,7 +21,7 @@ APIKey = 'RGAPI-a84d98d6-747a-4382-bee5-3a024dd98f50'
 
 
 def index(request):
-    summonerNameList = Summoner.objects.all() #['minras', 'exkira', 'eksrag']  # return all summoners in django database created in models
+    summonerNameList = SummonerV4.objects.all() #['minras', 'exkira', 'eksrag']  # return all summoners in django database created in models
     # Form: POST related
     if request.method == 'POST':  # only true if form is submitted
         form = SummonerForm(request.POST)  # add actual request data to form for processing

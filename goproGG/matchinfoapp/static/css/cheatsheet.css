@@ -53,3 +53,8 @@ background: linear-gradient(to top right, #524ad0 10%, #D099FA);
   margin: inherit;
 }
 .footer {background-color: white;}
+
+#bottom {
+  margin-top: auto;
+
+}

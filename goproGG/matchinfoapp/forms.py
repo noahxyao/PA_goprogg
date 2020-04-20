@@ -1,9 +1,9 @@
 from django.forms import ModelForm, TextInput
-from .models import Summoner
+from .models import SummonerV4
 
 class SummonerForm(ModelForm):
     class Meta:
-        model = Summoner
+        model = SummonerV4
         fields = ['name']
         widgets = {
             'name': TextInput(attrs={'class' : 'input', 'placeholder' : 'Summoner Name'}),
