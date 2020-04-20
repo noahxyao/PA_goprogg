@@ -182,7 +182,7 @@ async def main():
 
 				try:
 
-					if responseJSONMatchList['matches'][i]['gameId'] == DBPlayerMatchList[0][2]:
+					if responseJSONMatchList['matches'][i]['gameId'] == DBPlayerMatchList[0][3]:
 						print(responseJSONMatchList['matches'][i]['gameId'], " was last new matchId to be imported.")
 						break
 
