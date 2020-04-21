@@ -15,6 +15,16 @@ def requestRankedData(region, ID, APIKey):
     response = requests.get(URL)
     return response.json()
 
+def requestMatchList(region, accountId, APIKey):
+    URL = "https://" + region + ".api.riotgames.com/lol/match/v4/matchlists/by-account/" + str(accountId) + "?api_key=" + str(APIKey)
+    response = requests.get(URL)
+    return response.json()
+
+def requestMatchInfo(region, matchId, APIKey):
+    URL = "https://" + region + ".api.riotgames.com/lol/match/v4/matches/" + str(matchId) + "?api_key=" + str(APIKey)
+    response = requests.get(URL)
+    return response.json()
+
 
 region = "EUW1"
 APIKey = 'RGAPI-3852def8-6177-4d52-bb19-bdfbff71b50c'
@@ -34,6 +44,8 @@ def player(request):
     ID = responseSummonerData['id']
     accountId = responseSummonerData['accountId']
     responseRankedData = requestRankedData(region, ID, APIKey)
+    responseMatchList = requestMatchList(region, accountId, APIKey)
+
 
     for queue in responseRankedData:
         if queue['queueType'] == "RANKED_FLEX_SR":
@@ -63,15 +75,26 @@ def player(request):
     diff_sec = diff.total_seconds()
     lastGamePlayed = int(diff_sec // 3600)
 
-    # Get DB Data on Match History ===============================================
-    matchListDB = MatchlistV4.objects.filter(accountid__icontains=accountId)
+    # For 20 games, get matchIds along with all match data in one dictionary ===============================================
+    matchList_data = []
+    matchDetail_data = []
 
-    matchList = []
+    for i in range(20):
+        matchListInfo = {
+            'gameId': responseMatchList['matches'][i]['gameId'],
+            'champion': responseMatchList['matches'][i]['champion'],
+            'queue': responseMatchList['matches'][i]['queue'],
+            'season': responseMatchList['matches'][i]['season'],
+            'timestamp': responseMatchList['matches'][i]['timestamp'],
+            'role':responseMatchList['matches'][i]['role'],
+            'lane': responseMatchList['matches'][i]['lane'],
+            'matchDetailInfo': requestMatchInfo(region, responseMatchList['matches'][i]['gameId'], APIKey)
+        }
 
-    for match in matchListDB:
-        gameId = match.gameid
+        matchList_data.append(matchListInfo)
 
-        matchList.append(gameId)
+
+
 
     # All Variables in one place
     context = {
@@ -80,7 +103,9 @@ def player(request):
         'soloRankedData': soloRankedData,
         'lastGamePlayed': lastGamePlayed,
         'query':query,
-        'matchListDB': matchListDB
+        'matchList_data': matchList_data,
+        'matchDetail_data': matchDetail_data,
+        'responseMatchList': responseMatchList,
     }
 
     return render(request, 'player/cheatsheet_index.html', context)

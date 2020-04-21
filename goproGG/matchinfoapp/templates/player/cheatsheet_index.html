@@ -108,13 +108,17 @@
                             <div class="media-left">
                                 <figure class="image is-64x64">
                                     <img src="{% static 'images/Emblem_' %}{{ soloRankedData.tier }}.png" alt="{{responseSummonerData.name}} - Profile">
+                                    <span>Solo Q</span>
                                 </figure>
                             </div>
                             <div class="media-content">
                                 <div class="content">
                                     <p>
                                         <span class="title">{{ soloRankedData.tier }} {{ soloRankedData.rank }}</span>
-                                        <br> Last Played: {{lastGamePlayed}} hours ago
+                                        <br>
+                                        {{ soloRankedData.leaguePoints }} LP / {{ soloRankedData.wins }}W {{ soloRankedData.losses }}L
+                                        <br>
+                                        Last Played: {{lastGamePlayed}} hours ago
                                     </p>
                                 </div>
                             </div>
@@ -128,13 +132,17 @@
                             <div class="media-left">
                                 <figure class="image is-64x64">
                                     <img src="{% static 'images/Emblem_' %}{{ flexRankedData.tier }}.png" alt="{{responseSummonerData.name}} - Profile">
+                                    <span>Flex Q</span>
                                 </figure>
                             </div>
                             <div class="media-content">
                                 <div class="content">
                                     <p>
                                         <span class="subtitle">{{ flexRankedData.tier }} {{ flexRankedData.rank }}</span>
-                                        <br> Last Played: {{lastGamePlayed}} hours ago
+                                        <br>
+                                        {{ soloRankedData.leaguePoints }} LP / {{ flexRankedData.wins }}W {{ flexRankedData.losses }}L
+                                        <br>
+                                        Last Played: {{lastGamePlayed}} hours ago
                                     </p>
                                 </div>
                             </div>
@@ -172,18 +180,23 @@
                     <h3 class="title is-3">Recent Matches</h3>
 
                     <!-- box -->
+                    {% for match in matchList_data %}
                     <div class="box">
-                        <h4 id="const" class="title is-3">const</h4>
+                        <h4 id="const" class="title is-3">{{ match.champion }}</h4>
                         <article class="message is-primary">
                             <span class="icon has-text-primary">
                                 <i class="fab fa-js"></i>
                             </span>
                             <div class="message-body">
-                                Block-scoped. Cannot be re-assigned. Not immutable.
+                                Game ID: {{match.gameId}}
+                                <br>
+                                Team 1: {{ match.matchDetailInfo.teams.0.win }}
+                                Team 2: {{ match.matchDetailInfo.teams.1.win }}
                             </div>
                         </article>
                         <pre><code class="language-javascript">const test = 'test';</code></pre>
                     </div>
+                    {% endfor %}
                     <!-- /box -->
 
                     <!-- box -->
