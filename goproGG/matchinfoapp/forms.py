@@ -1,4 +1,4 @@
-import forms
+from django import forms
 from .models import SummonerV4
 
 class SummonerForm(forms.ModelForm):
@@ -10,4 +10,4 @@ class SummonerForm(forms.ModelForm):
         } #updates the input class to have the correct Bulma class and placeholder
 
 class SearchForm(forms.Form):
-    sumName = forms.CharField()
+    sumName = forms.CharField(help_text="Summoner Name")

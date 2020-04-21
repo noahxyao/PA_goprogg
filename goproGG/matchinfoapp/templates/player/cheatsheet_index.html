@@ -26,43 +26,55 @@
         <div class="container">
             <div class="columns">
                 <!-- column left-->
-                <div class="column is-3">
-                    <div class="container content">
-                        <i class="is-large fab fa-discord"></i>
-                        <i class="is-large fas fa-code"></i>
-                        <h1 class="title">{{ summoner_data.0.name }}</h1>
-                        <h3 class="subtitle">
-                            Collection of code goodies for next-level dev
-                        </h3>
+                <div class="column is-5">
+                    <!-- media -->
+                    <div class="media">
+                        <div class="media-left">
+                            <figure class="image is-128x128">
+                                <img src="https://ddragon.leagueoflegends.com/cdn/10.8.1/img/profileicon/{{responseSummonerData.profileIconId}}.png" alt="{{responseSummonerData.name}} - Profile">
+                                <p class="is-small">
+                                {{ responseSummonerData.summonerLevel }}
+                                </p>
+                            </figure>
 
-                        <!-- button -->
-                        <a href="https://github.com/BulmaTemplates/bulma-templates" target="_blank"
-                           class="button is-primary is-large">
-                            <span class="icon">
-                                <i class="fab fa-github"></i>
-                            </span>
-                            <span>Github</span>
-                        </a>
-                        <!-- /button -->
+                        </div>
+                        <div class="media-content">
+                            <div class="content">
+                                <h1 class="title">{{ responseSummonerData.name }}</h1>
+                                <p class="is-small">
+                                    Rank # (Top %)
+                                </p>
+
+                                <!-- button -->
+                                <a href="https://euw.op.gg/summoner/userName={{responseSummonerData.name}}" target="_blank"
+                                   class="button is-primary">
+                                    <span class="icon">
+                                        <i class="fab fa-gg"></i>
+                                    </span>
+                                    <span>OP.GG</span>
+                                </a>
+                                <!-- /button -->
+                            </div>
+                        </div>
 
                     </div>
+                    <!-- /media -->
                 </div>
                 <!-- /column left-->
 
                 <!-- column right-->
-                <div id = "bottom" class="column is-6">
+                <div id = "bottom" class="column is-4">
 
                     <!-- Search Bar-->
                     <div class="container content">
-                        <form method="POST">
-                        {% csrf_token %}
+                        <form method="GET">
                             <div class="field has-addons">
                                 <div class="control is-expanded">
-                                    {{ form.name }}
+                                    <input class="input" type="text" name="q" value="{{ request.GET.q }}" placeholder="Search Summoner">
                                 </div>
                                 <div class="control">
                                     <button class="button is-info">
-                                        Search Summoner
+                                        Search
                                     </button>
                                 </div>
                             </div>
@@ -88,14 +100,48 @@
             <div class="column is-3">
                 <aside class="is-medium menu">
                     <p class="menu-label">
-                        categories
+                        Ranked Data
                     </p>
-                    <ul class="menu-list">
-                        <li class="is-right"><a href="#const" class="is-active"><i class="fab fa-css3-alt"></i> CSS</a>
-                        </li>
-                        <li><a href="#let" class="is-active"><i class="fab fa-js"></i> JS</a></li>
-                        <li><a href="#let" class="is-active"><i class="fab fa-html5"></i> HTML</a></li>
-                    </ul>
+                    <!-- Solo Box-->
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-left">
+                                <figure class="image is-64x64">
+                                    <img src="{% static 'images/Emblem_' %}{{ soloRankedData.tier }}.png" alt="{{responseSummonerData.name}} - Profile">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        <span class="title">{{ soloRankedData.tier }} {{ soloRankedData.rank }}</span>
+                                        <br> Last Played: {{lastGamePlayed}} hours ago
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <!-- /Solo Box-->
+
+                    <!-- Flex Box-->
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-left">
+                                <figure class="image is-64x64">
+                                    <img src="{% static 'images/Emblem_' %}{{ flexRankedData.tier }}.png" alt="{{responseSummonerData.name}} - Profile">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        <span class="subtitle">{{ flexRankedData.tier }} {{ flexRankedData.rank }}</span>
+                                        <br> Last Played: {{lastGamePlayed}} hours ago
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <!-- /Flex Box-->
+
                     <p class="menu-label">
                         More to read...
                     </p>
@@ -123,7 +169,7 @@
             <!-- .column right -->
             <div class="column is-9">
                 <div class="content is-medium">
-                    <h3 class="title is-3">Snippets ¯\_(ツ)_/¯</h3>
+                    <h3 class="title is-3">Recent Matches</h3>
 
                     <!-- box -->
                     <div class="box">

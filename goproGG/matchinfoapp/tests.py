@@ -23,4 +23,4 @@ def index(request):
         ID = responseSummonerData['id']
         responseRankedData = requestRankedData(region, ID, APIKey)
 
-    return render(request, 'ranked/weather_index.html')
+    return render(request, 'player/weather_index.html')

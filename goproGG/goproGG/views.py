@@ -38,4 +38,4 @@ responseJSON2 = requestRankedData(region, ID, APIKey)
 
 def index(request):
 	
-	return render(request, 'ranked/index.html', {'data':responseJSON2})
+	return render(request, 'player/index.html', {'data':responseJSON2})
