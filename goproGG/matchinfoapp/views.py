@@ -3,7 +3,8 @@ import requests
 from datetime import datetime
 from .models import SummonerV4, MatchlistV4, MatchparticipantV4
 from .forms import SummonerForm, SearchForm
-from django.db.models import Q
+from .queues import queueType
+import json
 
 def requestSummonerData(region, summonerName, APIKey):
     URL = "https://" + str(region) + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + str(summonerName).replace(" ","").casefold() + "?api_key=" + str(APIKey)
@@ -25,9 +26,18 @@ def requestMatchInfo(region, matchId, APIKey):
     response = requests.get(URL)
     return response.json()
 
+# Get hours since last game
+def requestLastGamePlayed(timestamp):
+    lastGamePlayedDate = timestamp / 1000.00
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    then = datetime.fromtimestamp(lastGamePlayedDate).strftime('%Y-%m-%d %H:%M:%S')
+    diff = datetime.strptime(now, '%Y-%m-%d %H:%M:%S') - datetime.strptime(then, '%Y-%m-%d %H:%M:%S')
+    diff_sec = diff.total_seconds()
+    lastGamePlayed = int(diff_sec // 3600)
+    return lastGamePlayed
 
 region = "EUW1"
-APIKey = 'RGAPI-3852def8-6177-4d52-bb19-bdfbff71b50c'
+APIKey = 'RGAPI-1dce2429-ac9b-4f3b-8252-94ef8cd06299'
 
 
 
@@ -46,7 +56,7 @@ def player(request):
     responseRankedData = requestRankedData(region, ID, APIKey)
     responseMatchList = requestMatchList(region, accountId, APIKey)
 
-
+    # Save Ranked Data in dicts
     for queue in responseRankedData:
         if queue['queueType'] == "RANKED_FLEX_SR":
             flexRankedData = {
@@ -67,31 +77,49 @@ def player(request):
                 'losses': queue['losses'],
             }
 
-    # Get hours since last game
-    lastGamePlayedDate = responseSummonerData['revisionDate'] / 1000.00
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    then = datetime.fromtimestamp(lastGamePlayedDate).strftime('%Y-%m-%d %H:%M:%S')
-    diff = datetime.strptime(now, '%Y-%m-%d %H:%M:%S') - datetime.strptime(then, '%Y-%m-%d %H:%M:%S')
-    diff_sec = diff.total_seconds()
-    lastGamePlayed = int(diff_sec // 3600)
+    # Winrates in both Queues
+    soloqWR = "{0:.0%}".format(soloRankedData['wins']/(soloRankedData['wins'] + soloRankedData['losses']))
+    flexqWR = "{0:.0%}".format(flexRankedData['wins'] / (flexRankedData['wins'] + flexRankedData['losses']))
 
-    # For 20 games, get matchIds along with all match data in one dictionary ===============================================
+   # For limit = 20 games, get matchIds along with all match data in one dictionary ===============================================
     matchList_data = []
     matchDetail_data = []
 
-    for i in range(20):
+    index = 0
+    limit = 20
+
+    for i in range(len(responseMatchList['matches'])):
         matchListInfo = {
             'gameId': responseMatchList['matches'][i]['gameId'],
             'champion': responseMatchList['matches'][i]['champion'],
             'queue': responseMatchList['matches'][i]['queue'],
+            'queueType': queueType[str(responseMatchList['matches'][i]['queue'])],
             'season': responseMatchList['matches'][i]['season'],
             'timestamp': responseMatchList['matches'][i]['timestamp'],
+            'lastGame': requestLastGamePlayed(responseMatchList['matches'][i]['timestamp']),
             'role':responseMatchList['matches'][i]['role'],
             'lane': responseMatchList['matches'][i]['lane'],
             'matchDetailInfo': requestMatchInfo(region, responseMatchList['matches'][i]['gameId'], APIKey)
         }
 
+
         matchList_data.append(matchListInfo)
+        index += 1
+        if index == limit:
+            break
+
+    # Get SoloQ and flexQ last game played
+    lastSoloQGame = 'Longer than 20 Games ago'
+    lastFlexQGame = 'Longer than 20 games ago'
+    for entry in matchList_data:
+        if entry['queue'] == 420:
+            lastSoloQGame = 'Last Played: ' + str(entry['lastGame']) + ' hours ago'
+            break
+
+        if entry['queue'] == 440:
+            lastFlexQGame = 'Last Played: ' + str(entry['lastGame']) + ' hours ago'
+            break
+
 
 
 
@@ -101,11 +129,14 @@ def player(request):
         'responseSummonerData': responseSummonerData,
         'flexRankedData': flexRankedData,
         'soloRankedData': soloRankedData,
-        'lastGamePlayed': lastGamePlayed,
         'query':query,
         'matchList_data': matchList_data,
         'matchDetail_data': matchDetail_data,
         'responseMatchList': responseMatchList,
+        'lastSoloQGame': lastSoloQGame,
+        'lastFlexQGame': lastFlexQGame,
+        'soloqWR': soloqWR,
+        'flexqWR': flexqWR,
     }
 
     return render(request, 'player/cheatsheet_index.html', context)

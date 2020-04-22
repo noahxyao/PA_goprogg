@@ -41,6 +41,8 @@
                         <div class="media-content">
                             <div class="content">
                                 <h1 class="title">{{ responseSummonerData.name }}</h1>
+                                <br>
+                                Last active: {{matchList_data.0.lastGame}} hours ago
                                 <p class="is-small">
                                     Rank # (Top %)
                                 </p>
@@ -102,7 +104,7 @@
                     <p class="menu-label">
                         Ranked Data
                     </p>
-                    <!-- Solo Box-->
+                    <!-- SoloQ Box-->
                     <div class="box">
                         <article class="media">
                             <div class="media-left">
@@ -118,15 +120,17 @@
                                         <br>
                                         {{ soloRankedData.leaguePoints }} LP / {{ soloRankedData.wins }}W {{ soloRankedData.losses }}L
                                         <br>
-                                        Last Played: {{lastGamePlayed}} hours ago
+                                        Win Rate {{ soloqWR }}
+                                        <br>
+                                        {{ lastSoloQGame }}
                                     </p>
                                 </div>
                             </div>
                         </article>
                     </div>
-                    <!-- /Solo Box-->
+                    <!-- /SoloQ Box-->
 
-                    <!-- Flex Box-->
+                    <!-- FlexQ Box-->
                     <div class="box">
                         <article class="media">
                             <div class="media-left">
@@ -140,15 +144,17 @@
                                     <p>
                                         <span class="subtitle">{{ flexRankedData.tier }} {{ flexRankedData.rank }}</span>
                                         <br>
-                                        {{ soloRankedData.leaguePoints }} LP / {{ flexRankedData.wins }}W {{ flexRankedData.losses }}L
+                                        {{ flexRankedData.leaguePoints }} LP / {{ flexRankedData.wins }}W {{ flexRankedData.losses }}L
                                         <br>
-                                        Last Played: {{lastGamePlayed}} hours ago
+                                        Win Rate {{ flexqWR }}
+                                        <br>
+                                        {{ lastFlexQGame }}
                                     </p>
                                 </div>
                             </div>
                         </article>
                     </div>
-                    <!-- /Flex Box-->
+                    <!-- /FlexQ Box-->
 
                     <p class="menu-label">
                         More to read...
@@ -182,19 +188,68 @@
                     <!-- box -->
                     {% for match in matchList_data %}
                     <div class="box">
-                        <h4 id="const" class="title is-3">{{ match.champion }}</h4>
-                        <article class="message is-primary">
-                            <span class="icon has-text-primary">
-                                <i class="fab fa-js"></i>
-                            </span>
-                            <div class="message-body">
-                                Game ID: {{match.gameId}}
-                                <br>
-                                Team 1: {{ match.matchDetailInfo.teams.0.win }}
-                                Team 2: {{ match.matchDetailInfo.teams.1.win }}
+                        <div class="columns">
+                            <!-- col 1-5-->
+                            <div class="column is-5">
+                                <div class="columns">
+                                    <!-- col matchtype, time, result, duration-->
+                                    <div class="column is-4">
+                                        <div class="message">
+                                            Game ID: {{match.gameId}}
+                                            <br>
+                                            {{ match.queueType }}
+                                            <br>
+                                            Team 1: {{ match.matchDetailInfo.teams.0.win }}
+                                            Team 2: {{ match.matchDetailInfo.teams.1.win }}
+                                        </div>
+                                    </div>
+                                    <!-- /col matchtype, time, result, duration-->
+                                    <!-- col champ pic sums keystones-->
+                                    <div class="column is-4">
+                                        <p class="title is-3">
+                                            {{ match.champion }}
+                                        </p>
+                                    </div>
+                                    <!-- /col champ pic sums keystones-->
+                                    <!-- KDA -->
+                                    <div class="column is-4">
+
+                                    </div>
+                                    <!-- /KDA -->
+                                </div>
                             </div>
-                        </article>
-                        <pre><code class="language-javascript">const test = 'test';</code></pre>
+                            <!-- /col 1-5-->
+                            <!-- col 7-12 -->
+                            <div class="column is-7">
+                                <div class="columns">
+                                    <!-- Level, CS, Killpart, game MMR-->
+                                    <div class="column is-2">
+
+                                    </div>
+                                    <!-- /Level, CS, Killpart, game MMR-->
+                                    <!-- Items, Wards -->
+                                    <div class="column is-3">
+
+                                    </div>
+                                    <!-- /Items, Wards -->
+                                    <!-- Team 1 -->
+                                    <div class="column is-3">
+                                        Team 1: {{ match.matchDetailInfo.teams.0.win }}
+                                    </div>
+                                    <!-- /Team 1 -->
+                                    <!-- Team 2-->
+                                    <div class="column is-3">
+                                        Team 2: {{ match.matchDetailInfo.teams.1.win }}
+                                    </div>
+                                    <!-- /Team 2-->
+                                    <!-- Dropdown Menu -->
+                                    <div class="column is-1">
+
+                                    </div>
+                                    <!-- /Dropdown Menu -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {% endfor %}
                     <!-- /box -->
