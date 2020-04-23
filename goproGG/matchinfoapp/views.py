@@ -5,6 +5,7 @@ from .models import SummonerV4, MatchlistV4, MatchparticipantV4
 from .forms import SummonerForm, SearchForm
 from .queues import queueType
 import json
+import re
 
 def requestSummonerData(region, summonerName, APIKey):
     URL = "https://" + str(region) + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + str(summonerName).replace(" ","").casefold() + "?api_key=" + str(APIKey)
@@ -36,6 +37,25 @@ def requestLastGamePlayed(timestamp):
     lastGamePlayed = int(diff_sec // 3600)
     return lastGamePlayed
 
+#get Champ .json from DDragon
+def getChamps():
+    champs = requests.get("http://ddragon.leagueoflegends.com/cdn/10.8.1/data/en_US/champion.json")
+    return champs.json()
+
+#get spaces before Capital Letters when needed
+def capital_words_spaces(str1):
+    return re.sub(r"(\w)([A-Z])", r"\1 \2", str1)
+
+
+def getChampName(champList, currentCheck):
+    for name, champEntry in champList:
+        if currentCheck == champEntry['key']:
+            champName = name
+            return capital_words_spaces(champName)
+            break
+
+
+
 region = "EUW1"
 APIKey = 'RGAPI-1dce2429-ac9b-4f3b-8252-94ef8cd06299'
 
@@ -49,12 +69,13 @@ def player(request):
 
     sumName = SummonerV4.objects.filter(name__icontains='exkira')
 
-    # Get Real Time User data from Riot API
+    # Get Real Time User data from Riot API, get all champ data from DDragon
     responseSummonerData = requestSummonerData(region, summonerName, APIKey)
     ID = responseSummonerData['id']
     accountId = responseSummonerData['accountId']
     responseRankedData = requestRankedData(region, ID, APIKey)
     responseMatchList = requestMatchList(region, accountId, APIKey)
+    champions = getChamps()
 
     # Save Ranked Data in dicts
     for queue in responseRankedData:
@@ -89,9 +110,11 @@ def player(request):
     limit = 20
 
     for i in range(len(responseMatchList['matches'])):
+
         matchListInfo = {
             'gameId': responseMatchList['matches'][i]['gameId'],
             'champion': responseMatchList['matches'][i]['champion'],
+            'championName': getChampName(champions['data'].items(), str(responseMatchList['matches'][i]['champion'])),
             'queue': responseMatchList['matches'][i]['queue'],
             'queueType': queueType[str(responseMatchList['matches'][i]['queue'])],
             'season': responseMatchList['matches'][i]['season'],

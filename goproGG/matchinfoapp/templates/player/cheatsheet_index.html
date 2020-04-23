@@ -180,12 +180,12 @@
             </div>
             <!-- /.column left -->
 
-            <!-- .column right -->
+            <!-- .Match History -->
             <div class="column is-9">
                 <div class="content is-medium">
                     <h3 class="title is-3">Recent Matches</h3>
 
-                    <!-- box -->
+                    <!-- for loop box -->
                     {% for match in matchList_data %}
                     <div class="box">
                         <div class="columns">
@@ -194,20 +194,17 @@
                                 <div class="columns">
                                     <!-- col matchtype, time, result, duration-->
                                     <div class="column is-4">
-                                        <div class="message">
+                                        <div class="container">
                                             Game ID: {{match.gameId}}
                                             <br>
                                             {{ match.queueType }}
-                                            <br>
-                                            Team 1: {{ match.matchDetailInfo.teams.0.win }}
-                                            Team 2: {{ match.matchDetailInfo.teams.1.win }}
                                         </div>
                                     </div>
                                     <!-- /col matchtype, time, result, duration-->
                                     <!-- col champ pic sums keystones-->
                                     <div class="column is-4">
                                         <p class="title is-3">
-                                            {{ match.champion }}
+                                            {{ match.championName }}
                                         </p>
                                     </div>
                                     <!-- /col champ pic sums keystones-->
@@ -252,7 +249,7 @@
                         </div>
                     </div>
                     {% endfor %}
-                    <!-- /box -->
+                    <!-- /for loop box -->
 
                     <!-- box -->
                     <div class="box">
@@ -289,7 +286,7 @@
 
                 </div>
             </div>
-            <!-- /.column right -->
+            <!-- /Match History -->
 
         </div>
     </div>
