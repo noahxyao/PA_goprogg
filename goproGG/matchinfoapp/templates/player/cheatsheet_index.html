@@ -14,7 +14,7 @@
     <link rel='stylesheet' href="{% static 'css/prism.css' %}">
     <link rel="stylesheet" href="{% static 'css/cheatsheet.css' %}">
     <script src="https://kit.fontawesome.com/a351244207.js" crossorigin="anonymous"></script>
-    <!--<link rel="stylesheet" href="{% static 'css/debug.css' %}">-->
+    <link rel="stylesheet" href="{% static 'css/debug.css' %}">
 </head>
 
 
@@ -237,6 +237,39 @@
                                     <!-- Team 1 -->
                                     <div class="column is-3">
                                         Team 1: {{ match.matchDetailInfo.teams.0.win }}
+                                        <div class="container">
+                                            <div class="section">
+                                                <figure class="image is-32x32 is-pulled-left">
+                                                    <img src="{{ match.participant_0_champLink }}" alt="{{match.matchDetailInfo.participants.0.championId}}">
+                                                </figure>
+                                                {{ match.matchDetailInfo.participantIdentities.0.player.summonerName }}
+                                            </div>
+                                            <div class="section">
+                                                <figure class="image is-32x32 is-pulled-left">
+                                                    <img src="{{ match.participant_1_champLink }}" alt="{{match.matchDetailInfo.participants.1.championId}}">
+                                                </figure>
+                                                {{ match.matchDetailInfo.participantIdentities.1.player.summonerName }}
+                                            </div>
+                                            <div class="section">
+                                                <figure class="image is-32x32 is-pulled-left">
+                                                    <img src="{{ match.participant_2_champLink }}" alt="{{match.matchDetailInfo.participants.2.championId}}">
+                                                </figure>
+                                                {{ match.matchDetailInfo.participantIdentities.2.player.summonerName }}
+                                            </div>
+                                            <div class="section">
+                                                <figure class="image is-32x32 is-pulled-left">
+                                                    <img src="{{ match.participant_3_champLink }}" alt="{{match.matchDetailInfo.participants.3.championId}}">
+                                                </figure>
+                                                {{ match.matchDetailInfo.participantIdentities.3.player.summonerName }}
+                                            </div>
+                                            <div class="section">
+                                                <figure class="image is-32x32 is-pulled-left">
+                                                    <img src="{{ match.participant_4_champLink }}" alt="{{match.matchDetailInfo.participants.4.championId}}">
+                                                </figure>
+                                                {{ match.matchDetailInfo.participantIdentities.4.player.summonerName }}
+                                            </div>
+
+                                        </div>
                                     </div>
                                     <!-- /Team 1 -->
                                     <!-- Team 2-->

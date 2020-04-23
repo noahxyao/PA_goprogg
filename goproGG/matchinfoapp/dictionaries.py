@@ -12,6 +12,7 @@ queueType = {
         '76': "URF",
         '78': "One For All: Mirror Mode",
         '83': "Coop URF",
+		'900': "URF",
         '950': "Doom Bots",
 		'1020': "One for All",
     }

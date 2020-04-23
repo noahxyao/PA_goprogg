@@ -118,8 +118,8 @@ def player(request):
         else:
             flexqWR = "Unranked"
     else:
-        soloqWR = "Unranked"
-        flexqWR = "Unranked"
+        soloqWR = "unavailable | Unranked"
+        flexqWR = "unavailable | Unranked"
 
    # For limit = 20 games, get matchIds along with all match data in one dictionary ===============================================
     matchList_data = []
@@ -127,6 +127,7 @@ def player(request):
 
     index = 0
     limit = 20
+    rangeTen = [0,1,2,3,4,5,6,7,8,9]
 
     for i in range(len(responseMatchList['matches'])):
 
@@ -142,9 +143,25 @@ def player(request):
             'lastGame': requestLastGamePlayed(responseMatchList['matches'][i]['timestamp']),
             'role':responseMatchList['matches'][i]['role'],
             'lane': responseMatchList['matches'][i]['lane'],
-            'matchDetailInfo': requestMatchInfo(region, responseMatchList['matches'][i]['gameId'], APIKey)
+            # API response for match Details
+            'matchDetailInfo': requestMatchInfo(region, responseMatchList['matches'][i]['gameId'], APIKey),
         }
 
+        # Get champ pictures for all participants of same game
+        matchListInfo.update( {
+            'participant_0_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][0]['championId']),
+            'participant_1_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][1]['championId']),
+            'participant_2_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][2]['championId']),
+            'participant_3_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][3]['championId']),
+            'participant_4_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][4]['championId']),
+            'participant_5_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][5]['championId']),
+            'participant_6_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][6]['championId']),
+            'participant_7_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][7]['championId']),
+            'participant_8_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][8]['championId']),
+            'participant_9_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][9]['championId']),
+
+
+        })
 
         matchList_data.append(matchListInfo)
         index += 1
@@ -180,6 +197,7 @@ def player(request):
         'lastFlexQGame': lastFlexQGame,
         'soloqWR': soloqWR,
         'flexqWR': flexqWR,
+        'rangeTen': rangeTen,
     }
 
     if bool(responseRankedData)== True:
