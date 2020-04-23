@@ -203,9 +203,14 @@
                                     <!-- /col matchtype, time, result, duration-->
                                     <!-- col champ pic sums keystones-->
                                     <div class="column is-4">
-                                        <p class="title is-3">
-                                            {{ match.championName }}
-                                        </p>
+                                        <div class="container">
+                                            <figure class="image is-64x64">
+                                                <img src="{{ match.championLink }}">
+                                            </figure>
+                                            <span>
+                                                {{ match.championName }}
+                                            </span>
+                                        </div>
                                     </div>
                                     <!-- /col champ pic sums keystones-->
                                     <!-- KDA -->

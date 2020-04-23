@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 from .models import SummonerV4, MatchlistV4, MatchparticipantV4
 from .forms import SummonerForm, SearchForm
-from .queues import queueType
+from .dictionaries import queueType, champLinks
 import json
 import re
 
@@ -46,24 +46,30 @@ def getChamps():
 def capital_words_spaces(str1):
     return re.sub(r"(\w)([A-Z])", r"\1 \2", str1)
 
-
+# Turn champion ID into acutal name
 def getChampName(champList, currentCheck):
     for name, champEntry in champList:
-        if currentCheck == champEntry['key']:
+        if str(currentCheck) == champEntry['key']:
             champName = name
             return capital_words_spaces(champName)
-            break
 
+# Turn champion ID into link to square image
+def getChampLink(champLinks, currentCheck):
+	for name, link in champLinks:
+		if str(currentCheck) == name:
+			champLink = link
+			return champLink
 
 
 region = "EUW1"
-APIKey = 'RGAPI-1dce2429-ac9b-4f3b-8252-94ef8cd06299'
+APIKey = 'RGAPI-15aafca3-6a5d-4e73-a912-9ad6cf249e39'
 
 
 
 def player(request):
+    # Define some global variables to use later
+    global soloRankedData, flexRankedData, soloRankedContext, flexRankedContext
     # User Input
-    global soloRankedData, flexRankedData
     query = request.GET.get('q', '')
     summonerName = query
 
@@ -77,30 +83,43 @@ def player(request):
     responseMatchList = requestMatchList(region, accountId, APIKey)
     champions = getChamps()
 
-    # Save Ranked Data in dicts
-    for queue in responseRankedData:
-        if queue['queueType'] == "RANKED_FLEX_SR":
-            flexRankedData = {
-                'leagueId': queue['leagueId'],
-                'tier': queue['tier'],
-                'rank': queue['rank'],
-                'leaguePoints': queue['leaguePoints'],
-                'wins': queue['wins'],
-                'losses': queue['losses'],
-            }
-        elif queue['queueType'] == "RANKED_SOLO_5x5":
-            soloRankedData = {
-                'leagueId': queue['leagueId'],
-                'tier': queue['tier'],
-                'rank': queue['rank'],
-                'leaguePoints': queue['leaguePoints'],
-                'wins': queue['wins'],
-                'losses': queue['losses'],
-            }
+
 
     # Winrates in both Queues
-    soloqWR = "{0:.0%}".format(soloRankedData['wins']/(soloRankedData['wins'] + soloRankedData['losses']))
-    flexqWR = "{0:.0%}".format(flexRankedData['wins'] / (flexRankedData['wins'] + flexRankedData['losses']))
+    if bool(responseRankedData) == True:
+        # Save Ranked Data in dicts
+        for queue in responseRankedData:
+            if queue['queueType'] == "RANKED_FLEX_SR":
+                flexRankedData = {
+                    'leagueId': queue['leagueId'],
+                    'tier': queue['tier'],
+                    'rank': queue['rank'],
+                    'leaguePoints': queue['leaguePoints'],
+                    'wins': queue['wins'],
+                    'losses': queue['losses'],
+                }
+            elif queue['queueType'] == "RANKED_SOLO_5x5":
+                soloRankedData = {
+                    'leagueId': queue['leagueId'],
+                    'tier': queue['tier'],
+                    'rank': queue['rank'],
+                    'leaguePoints': queue['leaguePoints'],
+                    'wins': queue['wins'],
+                    'losses': queue['losses'],
+                }
+
+        if bool(soloRankedData)== True:
+            soloqWR = "{0:.0%}".format(soloRankedData['wins']/(soloRankedData['wins'] + soloRankedData['losses']))
+        else:
+            soloqWR = "Unranked"
+
+        if bool(flexRankedData) == True:
+            flexqWR = "{0:.0%}".format(flexRankedData['wins'] / (flexRankedData['wins'] + flexRankedData['losses']))
+        else:
+            flexqWR = "Unranked"
+    else:
+        soloqWR = "Unranked"
+        flexqWR = "Unranked"
 
    # For limit = 20 games, get matchIds along with all match data in one dictionary ===============================================
     matchList_data = []
@@ -114,7 +133,8 @@ def player(request):
         matchListInfo = {
             'gameId': responseMatchList['matches'][i]['gameId'],
             'champion': responseMatchList['matches'][i]['champion'],
-            'championName': getChampName(champions['data'].items(), str(responseMatchList['matches'][i]['champion'])),
+            'championName': getChampName(champions['data'].items(), responseMatchList['matches'][i]['champion']),
+            'championLink': getChampLink(champLinks.items(),responseMatchList['matches'][i]['champion']),
             'queue': responseMatchList['matches'][i]['queue'],
             'queueType': queueType[str(responseMatchList['matches'][i]['queue'])],
             'season': responseMatchList['matches'][i]['season'],
@@ -150,8 +170,8 @@ def player(request):
     # All Variables in one place
     context = {
         'responseSummonerData': responseSummonerData,
-        'flexRankedData': flexRankedData,
-        'soloRankedData': soloRankedData,
+        # 'flexRankedData': flexRankedData,
+        # 'soloRankedData': soloRankedData,
         'query':query,
         'matchList_data': matchList_data,
         'matchDetail_data': matchDetail_data,
@@ -161,6 +181,11 @@ def player(request):
         'soloqWR': soloqWR,
         'flexqWR': flexqWR,
     }
+
+    if bool(responseRankedData)== True:
+        context.update({'soloRankedData': soloRankedData,})
+        context.update({'flexRankedData': flexRankedData, })
+
 
     return render(request, 'player/cheatsheet_index.html', context)
 
