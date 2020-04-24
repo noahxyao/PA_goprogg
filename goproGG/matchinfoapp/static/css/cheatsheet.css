@@ -33,6 +33,22 @@ background: linear-gradient(to top right, #524ad0 10%, #D099FA);
   margin-left: 0.2em;
 }
 
+.is-tiny {
+  font-size: 12px;
+}
+
+.crop {
+  font-size: 12px;
+  width:90px;
+  overflow:hidden;
+  height:24px;
+  line-height:24px;
+}​
+
+a {
+  color: inherit;
+}
+
 .media-content {overflow: hidden;}
 
 .menu-list li a:hover {

@@ -62,7 +62,7 @@ def getChampLink(champLinks, currentCheck):
 
 
 region = "EUW1"
-APIKey = 'RGAPI-15aafca3-6a5d-4e73-a912-9ad6cf249e39'
+APIKey = 'RGAPI-0f950251-0d6d-4fea-814a-1dfc155ae172'
 
 
 
@@ -122,12 +122,14 @@ def player(request):
         flexqWR = "unavailable | Unranked"
 
    # For limit = 20 games, get matchIds along with all match data in one dictionary ===============================================
+    index = 0
+    limit = 20
+
     matchList_data = []
     matchDetail_data = []
 
-    index = 0
-    limit = 20
-    rangeTen = [0,1,2,3,4,5,6,7,8,9]
+
+    rangeTen = [1,2,3,4,5,6,7,8,9,10]
 
     for i in range(len(responseMatchList['matches'])):
 
@@ -148,22 +150,36 @@ def player(request):
         }
 
         # Get champ pictures for all participants of same game
-        matchListInfo.update( {
-            'participant_0_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][0]['championId']),
-            'participant_1_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][1]['championId']),
-            'participant_2_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][2]['championId']),
-            'participant_3_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][3]['championId']),
-            'participant_4_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][4]['championId']),
-            'participant_5_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][5]['championId']),
-            'participant_6_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][6]['championId']),
-            'participant_7_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][7]['championId']),
-            'participant_8_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][8]['championId']),
-            'participant_9_champLink': getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][9]['championId']),
+        matchListInfo.update({
+            "champLink_1": getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][0]['championId']),
+            "champLink_2": getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][1]['championId']),
+            "champLink_3": getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][2]['championId']),
+            "champLink_4": getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][3]['championId']),
+            "champLink_5": getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][4]['championId']),
+            "champLink_6": getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][5]['championId']),
+            "champLink_7": getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][6]['championId']),
+            "champLink_8": getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][7]['championId']),
+            "champLink_9": getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][8]['championId']),
+            "champLink_10": getChampLink(champLinks.items(),matchListInfo['matchDetailInfo']['participants'][9]['championId']),
+            }
+        )
+
+        participantCounter = 0
+        for participant in matchListInfo['matchDetailInfo']['participantIdentities']:
+            if participant['player']['summonerName'] == responseSummonerData['name']:
+                participantId = participantCounter
+            else:
+                participantCounter += 1
+
+        if matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['win'] == True:
+            matchListInfo.update({"result": 'Win'})
+        else:
+            matchListInfo.update({"result": 'Loss'})
 
 
-        })
-
+        # Finally add all updates to a list
         matchList_data.append(matchListInfo)
+
         index += 1
         if index == limit:
             break

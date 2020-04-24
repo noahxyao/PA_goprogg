@@ -14,7 +14,7 @@
     <link rel='stylesheet' href="{% static 'css/prism.css' %}">
     <link rel="stylesheet" href="{% static 'css/cheatsheet.css' %}">
     <script src="https://kit.fontawesome.com/a351244207.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{% static 'css/debug.css' %}">
+    <!--<link rel="stylesheet" href="{% static 'css/debug.css' %}">-->
 </head>
 
 
@@ -198,6 +198,8 @@
                                             Game ID: {{match.gameId}}
                                             <br>
                                             {{ match.queueType }}
+                                            <br>
+                                            {{match.result}}
                                         </div>
                                     </div>
                                     <!-- /col matchtype, time, result, duration-->
@@ -237,44 +239,192 @@
                                     <!-- Team 1 -->
                                     <div class="column is-3">
                                         Team 1: {{ match.matchDetailInfo.teams.0.win }}
-                                        <div class="container">
-                                            <div class="section">
-                                                <figure class="image is-32x32 is-pulled-left">
-                                                    <img src="{{ match.participant_0_champLink }}" alt="{{match.matchDetailInfo.participants.0.championId}}">
-                                                </figure>
-                                                {{ match.matchDetailInfo.participantIdentities.0.player.summonerName }}
+                                        <article class="post">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <p class="image is-24x24">
+                                                        <img src="{{ match.champLink_1 }}" alt="{{match.matchDetailInfo.participants.0.championId}}">
+                                                    </p>
+                                                </div>
+                                                <div class="media-content">
+                                                    <div class="content">
+                                                        <p class="crop">
+                                                            <a href="http://127.0.0.1:8000/player/?q={{ match.matchDetailInfo.participantIdentities.0.player.summonerName }}">
+                                                                    {{ match.matchDetailInfo.participantIdentities.0.player.summonerName }}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="section">
-                                                <figure class="image is-32x32 is-pulled-left">
-                                                    <img src="{{ match.participant_1_champLink }}" alt="{{match.matchDetailInfo.participants.1.championId}}">
-                                                </figure>
-                                                {{ match.matchDetailInfo.participantIdentities.1.player.summonerName }}
+                                        </article>
+                                        <article class="post">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <p class="image is-24x24">
+                                                        <img src="{{ match.champLink_2 }}" alt="{{match.matchDetailInfo.participants.1.championId}}">
+                                                    </p>
+                                                </div>
+                                                <div class="media-content">
+                                                    <div class="content">
+                                                        <p class="crop">
+                                                            <a href="http://127.0.0.1:8000/player/?q={{ match.matchDetailInfo.participantIdentities.1.player.summonerName }}">
+                                                                {{ match.matchDetailInfo.participantIdentities.1.player.summonerName }}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="section">
-                                                <figure class="image is-32x32 is-pulled-left">
-                                                    <img src="{{ match.participant_2_champLink }}" alt="{{match.matchDetailInfo.participants.2.championId}}">
-                                                </figure>
-                                                {{ match.matchDetailInfo.participantIdentities.2.player.summonerName }}
+                                        </article>
+                                        <article class="post">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <p class="image is-24x24">
+                                                        <img src="{{ match.champLink_3 }}" alt="{{match.matchDetailInfo.participants.2.championId}}">
+                                                    </p>
+                                                </div>
+                                                <div class="media-content">
+                                                    <div class="content">
+                                                        <p class="crop">
+                                                            <a href="http://127.0.0.1:8000/player/?q={{ match.matchDetailInfo.participantIdentities.2.player.summonerName }}">
+                                                                {{ match.matchDetailInfo.participantIdentities.2.player.summonerName }}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="section">
-                                                <figure class="image is-32x32 is-pulled-left">
-                                                    <img src="{{ match.participant_3_champLink }}" alt="{{match.matchDetailInfo.participants.3.championId}}">
-                                                </figure>
-                                                {{ match.matchDetailInfo.participantIdentities.3.player.summonerName }}
+                                        </article>
+                                        <article class="post">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <p class="image is-24x24">
+                                                        <img src="{{ match.champLink_4 }}" alt="{{match.matchDetailInfo.participants.3.championId}}">
+                                                    </p>
+                                                </div>
+                                                <div class="media-content">
+                                                    <div class="content">
+                                                        <p class="crop">
+                                                            <a href="http://127.0.0.1:8000/player/?q={{ match.matchDetailInfo.participantIdentities.3.player.summonerName }}">
+                                                                {{ match.matchDetailInfo.participantIdentities.3.player.summonerName }}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="section">
-                                                <figure class="image is-32x32 is-pulled-left">
-                                                    <img src="{{ match.participant_4_champLink }}" alt="{{match.matchDetailInfo.participants.4.championId}}">
-                                                </figure>
-                                                {{ match.matchDetailInfo.participantIdentities.4.player.summonerName }}
+                                        </article>
+                                        <article class="post">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <p class="image is-24x24">
+                                                        <img src="{{ match.champLink_5 }}" alt="{{match.matchDetailInfo.participants.4.championId}}">
+                                                    </p>
+                                                </div>
+                                                <div class="media-content">
+                                                    <div class="content">
+                                                        <p class="crop">
+                                                            <a href="http://127.0.0.1:8000/player/?q={{ match.matchDetailInfo.participantIdentities.4.player.summonerName }}">
+                                                                {{ match.matchDetailInfo.participantIdentities.4.player.summonerName }}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
-
-                                        </div>
+                                        </article>
                                     </div>
                                     <!-- /Team 1 -->
                                     <!-- Team 2-->
                                     <div class="column is-3">
                                         Team 2: {{ match.matchDetailInfo.teams.1.win }}
+                                        <article class="post">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <p class="image is-24x24">
+                                                        <img src="{{ match.champLink_6 }}" alt="{{match.matchDetailInfo.participants.5.championId}}">
+                                                    </p>
+                                                </div>
+                                                <div class="media-content">
+                                                    <div class="content">
+                                                        <p class="crop">
+                                                            <a href="http://127.0.0.1:8000/player/?q={{ match.matchDetailInfo.participantIdentities.5.player.summonerName }}">
+                                                                {{ match.matchDetailInfo.participantIdentities.5.player.summonerName }}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </article>
+                                        <article class="post">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <p class="image is-24x24">
+                                                        <img src="{{ match.champLink_7 }}" alt="{{match.matchDetailInfo.participants.6.championId}}">
+                                                    </p>
+                                                </div>
+                                                <div class="media-content">
+                                                    <div class="content">
+                                                        <p class="crop">
+                                                            <a href="http://127.0.0.1:8000/player/?q={{ match.matchDetailInfo.participantIdentities.6.player.summonerName }}">
+                                                                {{ match.matchDetailInfo.participantIdentities.6.player.summonerName }}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </article>
+                                        <article class="post">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <p class="image is-24x24">
+                                                        <img src="{{ match.champLink_8 }}" alt="{{match.matchDetailInfo.participants.7.championId}}">
+                                                    </p>
+                                                </div>
+                                                <div class="media-content">
+                                                    <div class="content">
+                                                        <p class="crop">
+                                                            <a href="http://127.0.0.1:8000/player/?q={{ match.matchDetailInfo.participantIdentities.7.player.summonerName }}">
+                                                                {{ match.matchDetailInfo.participantIdentities.7.player.summonerName }}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </article>
+                                        <article class="post">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <p class="image is-24x24">
+                                                        <img src="{{ match.champLink_9 }}" alt="{{match.matchDetailInfo.participants.8.championId}}">
+                                                    </p>
+                                                </div>
+                                                <div class="media-content">
+                                                    <div class="content">
+                                                        <p class="crop">
+                                                            <a href="http://127.0.0.1:8000/player/?q={{ match.matchDetailInfo.participantIdentities.8.player.summonerName }}">
+                                                                {{ match.matchDetailInfo.participantIdentities.8.player.summonerName }}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </article>
+                                        <article class="post">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <p class="image is-24x24">
+                                                        <img src="{{ match.champLink_10 }}" alt="{{match.matchDetailInfo.participants.9.championId}}">
+                                                    </p>
+                                                </div>
+                                                <div class="media-content">
+                                                    <div class="content">
+                                                        <p class="crop">
+                                                            <a href="http://127.0.0.1:8000/player/?q={{ match.matchDetailInfo.participantIdentities.9.player.summonerName }}">
+                                                                {{ match.matchDetailInfo.participantIdentities.9.player.summonerName }}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </article>
+
                                     </div>
                                     <!-- /Team 2-->
                                     <!-- Dropdown Menu -->
