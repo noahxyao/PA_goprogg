@@ -3,5 +3,6 @@ from django.urls import path
 from . import views
 # When we request home/index url it use index view logic
 urlpatterns = [
-	path('',views.index, name='index')
+	path('player/',views.player, name='player'),
+	path('',views.search, name='search')
 	]

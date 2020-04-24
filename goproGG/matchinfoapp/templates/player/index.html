@@ -12,11 +12,14 @@
   <div class="hero-body">
     <div class="container">
       <h1 class="title">
-        Ranked Game Data: Exkira
+        Ranked Game Data: {{data2.0.summonerName }}
       </h1>
       <h2 class="subtitle">
         Wins and Losses in Ranked Queues
       </h2>
+      <figure class="image is-">
+        <img src="https://static.developer.riotgames.com/img/docs/lol/emblems_and_positions.png" alt="Image">
+      </figure>
     </div>
   </div>
 </section>
@@ -24,23 +27,33 @@
 <div class=columns>
 <div class="column">
 <div class="box">
-		{% for key in data %}
+		{% for key in data2 %}
   <article class="media">
     <div class="media-left">
       <figure class="image is-64x64">
-        <img src="https://i1.sndcdn.com/artworks-000028054782-24d89t-t500x500.jpg" alt="Image">
+        <img src="https://ddragon.leagueoflegends.com/cdn/10.8.1/img/profileicon/{{data.profileIconId}}.png" alt="{{data.name}} - Profile">
       </figure>
+      <p>
+        <strong>{{key.summonerName}}</strong>
+        <p class="typography" style="color: rgb(121, 134, 163);">Last Played: {{lastGamePlayed}} hours ago</p>
+      </p>
     </div>
     <div class="media-content">
       <div class="content">
         <p>
-          <strong>{{key.queueType}}</strong> <small>{{key.tier}}</small> <small>{{key.rank}}</small>
+          <strong>{{key.queueType}}</strong>
           <br>
-         {{key.summonerName}}
+          <small>{{key.tier}}</small> <small>{{key.rank}}</small>
+          <br>
+            <small>League Points: {{key.leaguePoints}}</small>
+          <br>
+            <small>Wins: {{key.wins}}</small>
+          <br>
+            <small>Losses: {{key.losses}}</small>
+          <br>
+          <a href="https://euw.op.gg/summoner/userName={{data.name}}">OP.GG</a>
          <br>
-         <a href="{{key.url}}">{{key.url}}</a>
-         <br>
-         League Points: {{key.leaguePoints}}
+
         </p>
       </div>
     </div>

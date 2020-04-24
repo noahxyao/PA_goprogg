@@ -1,3 +1,10 @@
-from django.test import TestCase
+list = [[] for j in range(10)]
+biglist = [{'hello': 'hello'}]
+list[5].append({
+    'hi': 'hi',
+    })
+list2 = {'hi': 'world'}
+biglist.update(list2)
 
-# Create your tests here.
+print(list2)
+print(biglist)

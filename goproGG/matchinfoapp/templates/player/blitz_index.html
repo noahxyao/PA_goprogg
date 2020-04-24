@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GoPro GG Blitz Template</title>
+</head>
+<body style="background: rgb(19, 28, 46);">
+    <div id="root">
+        <div id="gopro-app">
+            <div class="NavbarLayout">
+
+            </div>
+            <div class="Container_WholePage">
+                <div class="Wrapper_JustTheMiddle">
+                    <nav class="NavTabs">
+
+                    </nav>
+                    <div class="ProfileLayout_ProfileColumns">
+                        <div colspan="4" class="ProfileLayout_ColsLeft">
+                            <div class="PlayerOverview">
+                                <header class="ProfileLayout_ProfileCard">
+                                    <div class="Profile-info">
+                                        <div class="ProfileLayout_ProfileCardIconFrame">
+                                            <div class="ProfileLayout_ProfileCardIcon">
+                                                <div class="ProfileLayout_ProfileCardIconImage">
+                                                    <img src="https://ddragon.leagueoflegends.com/cdn/10.8.1/img/profileicon/{{data.profileIconId}}.png" alt="{{data.name}} - Profile">
+                                                </div>
+                                            </div>
+                                            <div class="ProfileLayout_ProfileCardLevel">
+                                                <p class="typography">
+                                                    {{data.summonerLevel}}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h1 class="typography_H6">
+                                                {{data.name}}
+                                            </h1>
+                                            <p class="typography" style="color: rgb(121, 134, 163);">Last Played: {{data.revisionDate}} hours ago</p>
+                                        </div>
+                                    </div>
+                                </header>
+                            </div>
+                        </div>
+                        <div colspan="8" class="ProfileLayout_ColsRight">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="Footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
