@@ -1,4 +1,4 @@
-Riot Games API
+# Riot Games API
 
 Things to keep in mind when new patches release:
 
