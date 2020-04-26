@@ -20,3 +20,4 @@ Further Things to be done:
 	-CS per Min
 	-Forward % FWD %
 	-FB Rate
+    -Champion Mastery in Ranked
