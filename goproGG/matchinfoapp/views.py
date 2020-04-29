@@ -1,6 +1,7 @@
 from django.shortcuts import render
 import requests
 from datetime import datetime
+import time
 from .models import SummonerV4, MatchlistV4, MatchparticipantV4
 from .forms import SummonerForm, SearchForm
 from .dictionaries import queueType, champLinks
@@ -37,14 +38,58 @@ def requestLastGamePlayed(timestamp):
     lastGamePlayed = int(diff_sec // 3600)
     return lastGamePlayed
 
-#get Champ .json from DDragon
-def getChamps():
-    champs = requests.get("http://ddragon.leagueoflegends.com/cdn/10.8.1/data/en_US/champion.json")
-    return champs.json()
+#get summoner spells from ddragon
+def getSumSpells():
+    sumSpells = requests.get("http://ddragon.leagueoflegends.com/cdn/10.8.1/data/en_US/summoner.json")
+    return sumSpells.json()
+
+def getSumSpellLink(sumSpellList, currentCheck):
+    for sumSpell, value in sumSpellList:
+        if str(currentCheck) == str(value['key']):
+            sumSpellLink = "http://ddragon.leagueoflegends.com/cdn/10.8.1/img/spell/" + str(value['image']['full'])
+            return sumSpellLink
+
+#get Item .json from DDragon
+def getItems():
+    items = requests.get("http://ddragon.leagueoflegends.com/cdn/10.8.1/data/en_US/item.json")
+    return items.json()
+
+# Get Img for item
+def getItemLink(itemList, currentCheck):
+    for itemId, value in itemList:
+        if str(currentCheck) == itemId:
+            itemLink = "http://ddragon.leagueoflegends.com/cdn/10.8.1/img/item/" + str(value['image']['full'])
+            return itemLink
+
+# Get Runes
+def getRunes():
+    runes = requests.get("http://ddragon.leagueoflegends.com/cdn/10.8.1/data/en_US/runesReforged.json")
+    return runes.json()
+
+# Get Img for runes
+def getRunesLink(runes, primaryTree, currentCheck):
+    for runeTree in runes:
+        if primaryTree == runeTree['id']:
+            for primaryRune in runeTree['slots'][0]['runes']:
+                if currentCheck == primaryRune['id']:
+                    runesLink = "http://ddragon.leagueoflegends.com/cdn/img/" + str(primaryRune['icon'])
+                    return runesLink
+
+# Get img for 2nd Tree
+def getSecRunesLink(runes, SecTree):
+    for runeTree in runes:
+        if SecTree == runeTree['id']:
+            runesLink2 = "http://ddragon.leagueoflegends.com/cdn/img/" + str(runeTree['icon'])
+            return runesLink2
 
 #get spaces before Capital Letters when needed
 def capital_words_spaces(str1):
     return re.sub(r"(\w)([A-Z])", r"\1 \2", str1)
+
+#get Champ .json from DDragon
+def getChamps():
+    champs = requests.get("http://ddragon.leagueoflegends.com/cdn/10.8.1/data/en_US/champion.json")
+    return champs.json()
 
 # Turn champion ID into acutal name
 def getChampName(champList, currentCheck):
@@ -62,7 +107,7 @@ def getChampLink(champLinks, currentCheck):
 
 
 region = "EUW1"
-APIKey = 'RGAPI-0f950251-0d6d-4fea-814a-1dfc155ae172'
+APIKey = 'RGAPI-4346da4f-7122-4b9c-9b25-056444ef1ded'
 
 
 
@@ -82,6 +127,9 @@ def player(request):
     responseRankedData = requestRankedData(region, ID, APIKey)
     responseMatchList = requestMatchList(region, accountId, APIKey)
     champions = getChamps()
+    items = getItems()
+    sumSpells = getSumSpells()
+    runes = getRunes()
 
 
 
@@ -164,17 +212,103 @@ def player(request):
             }
         )
 
+        # Get match information summoner by finding participantId list number 0-9 from result JSON
         participantCounter = 0
         for participant in matchListInfo['matchDetailInfo']['participantIdentities']:
             if participant['player']['summonerName'] == responseSummonerData['name']:
                 participantId = participantCounter
+                # Add Team Id for specific stats
+                if participantId <5:
+                    teamId = 0
+                else:
+                    teamId = 1
             else:
                 participantCounter += 1
 
+        # Get match result for summoner's participantId
         if matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['win'] == True:
-            matchListInfo.update({"result": 'Win'})
+            matchListInfo.update({"result": 'Victory'})
         else:
-            matchListInfo.update({"result": 'Loss'})
+            matchListInfo.update({"result": 'Defeat'})
+
+        # Add Multikills
+        if matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['largestMultiKill'] > 1:
+            killDict = {'2': 'Doublekill',
+                        '3': 'Triplekill',
+                        '4': 'Quadrakill',
+                        '5': 'Pentakill',
+                        }
+            matchListInfo.update({'largestMultiKill': killDict[str(matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['largestMultiKill'])]})
+
+        # Add total CS
+        totalCS = matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['totalMinionsKilled'] + matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['neutralMinionsKilled']
+        matchListInfo.update({'totalCS': totalCS})
+
+        # Add Game Duration and duration related variables
+        gameDuration = matchListInfo['matchDetailInfo']['gameDuration']
+        gameDurationMin = time.strftime('%M', time.gmtime(gameDuration))
+        gameDurationSec = time.strftime('%S', time.gmtime(gameDuration))
+        cspMin = round(totalCS/(int(gameDurationMin) + int(gameDurationSec)/60),2)
+        matchListInfo.update({'gameDurationMin': gameDurationMin,
+                              'gameDurationSec': gameDurationSec,
+                              'cspMin': cspMin,
+                              })
+
+        # Adding KillParticipation
+        teamKills1 = 0
+        teamKills2 = 0
+        teamKillsList = [teamKills1, teamKills2]
+
+        for participantKills in range(5):
+            teamKillsList[0] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['kills']
+        for participantKills in range(5,10):
+            teamKillsList[1] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['kills']
+
+        try:
+            killPart = round((matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['kills'] + matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['assists'])/teamKillsList[teamId], 2)
+            matchListInfo.update({'killPart': "{0:.0%}".format(killPart)})
+        except ZeroDivisionError:
+            killPart = "No Kills"
+            matchListInfo.update({'killPart': "{0:.0%}".format(killPart)})
+
+        # Get more matchDetail Information
+        matchListInfo.update({'spell1Id': matchListInfo['matchDetailInfo']['participants'][participantId]['spell1Id'],
+                              'spell2Id': matchListInfo['matchDetailInfo']['participants'][participantId]['spell2Id'],
+                              'spell1Link': getSumSpellLink(sumSpells['data'].items(),matchListInfo['matchDetailInfo']['participants'][participantId]['spell1Id']),
+                              'spell2Link': getSumSpellLink(sumSpells['data'].items(),matchListInfo['matchDetailInfo']['participants'][participantId]['spell2Id']),
+                              'item0': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item0'],
+                              'item1': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item1'],
+                              'item2': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item2'],
+                              'item3': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item3'],
+                              'item4': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item4'],
+                              'item5': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item5'],
+                              'item6': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item6'],
+                              'kills': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['kills'],
+                              'deaths': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['deaths'],
+                              'assists': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['assists'],
+                              'champLevel': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['champLevel'],
+                              'visionScore': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['visionScore'],
+                              'perkPrimaryStyle': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perkPrimaryStyle'],
+                              'perkSubStyle': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perkSubStyle'],
+                              'perk0': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perk0'],
+                              'keystoneLink': getRunesLink(runes,matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perkPrimaryStyle'],matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perk0']),
+                              'keystone2Link': getSecRunesLink(runes, matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perkSubStyle']),
+
+                              })
+
+        # error handling in dict=========================================================================================================
+        # Zero Division of KDA
+        try:
+            matchListInfo.update({'kda': round((matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['kills'] + matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['assists'])/matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['deaths'],2)})
+        except ZeroDivisionError:
+            matchListInfo.update({'kda': "Perfect"})
+
+        # emtpy item slots directed to grey placeholder if id= 0
+        for itemslot in range(7):
+            if matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item' + str(itemslot)] == 0:
+                matchListInfo.update({str('item' + str(itemslot) + 'Link'): "https://opgg-static.akamaized.net/images/pattern/opacity.1.png"})
+            else:
+                matchListInfo.update({str('item' + str(itemslot) + 'Link'): getItemLink(items['data'].items(),matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item' + str(itemslot)]),})
 
 
         # Finally add all updates to a list
