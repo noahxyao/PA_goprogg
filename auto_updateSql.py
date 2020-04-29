@@ -50,7 +50,8 @@ tb_create_matchParticipantData = """CREATE TABLE MatchParticipant_V4
 					neutralMinionsKilledEnemyJungle INT, totalTimeCrowdControlDealt INT, champLevel INT,
 					visionWardsBoughtInGame INT, sightWardsBoughtInGame INT, wardsPlaced INT, wardsKilled INT,
 					firstBloodKill BOOLEAN, firstBloodAssist BOOLEAN, firstTowerKill BOOLEAN, firstTowerAssist BOOLEAN,
-					firstInhibitorKill BOOLEAN, firstInhibitorAssist BOOLEAN)"""
+					firstInhibitorKill BOOLEAN, firstInhibitorAssist BOOLEAN, perk0 INT, perk1 INT, perk2 INT, perk3 INT,
+					perk4 INT, perk5 INT, perkPrimaryStyle INT, perkSubStyle INT)"""
 
 
 # Execute Table Creation
@@ -356,6 +357,15 @@ async def main():
 						firstTowerAssist 					= matchInfoData['participants'][player]['stats']['firstTowerAssist']
 						firstBloodKill 						= matchInfoData['participants'][player]['stats']['firstBloodKill']
 						firstBloodAssist 					= matchInfoData['participants'][player]['stats']['firstBloodAssist']
+						perk0 								= matchInfoData['participants'][player]['stats']['perk0']
+						perk1 								= matchInfoData['participants'][player]['stats']['perk1']
+						perk2 								= matchInfoData['participants'][player]['stats']['perk2']
+						perk3 								= matchInfoData['participants'][player]['stats']['perk3']
+						perk4 								= matchInfoData['participants'][player]['stats']['perk4']
+						perk5 								= matchInfoData['participants'][player]['stats']['perk5']
+						perkPrimaryStyle 					= matchInfoData['participants'][player]['stats']['perkPrimaryStyle']
+						perkSubStyle 						= matchInfoData['participants'][player]['stats']['perkSubStyle']
+
 					except KeyError:
 						firstInhibitorKill 					= False
 						firstInhibitorAssist 				= False
@@ -368,6 +378,14 @@ async def main():
 						firstTowerAssist 					= False
 						firstBloodKill 						= False
 						firstBloodAssist 					= False
+						perk0 								= None
+						perk1 								= None
+						perk2 								= None
+						perk3 								= None
+						perk4 								= None
+						perk5 								= None
+						perkPrimaryStyle 					= None
+						perkSubStyle 						= None
 
 					#Insert imported matchParticipant Data to SQL Database
 					cursor.execute("""INSERT INTO MatchParticipant_V4
@@ -384,10 +402,11 @@ async def main():
 										goldEarned, goldSpent, turretKills, inhibitorKills, totalMinionsKilled, neutralMinionsKilled,
 										neutralMinionsKilledTeamJungle, neutralMinionsKilledEnemyJungle, totalTimeCrowdControlDealt,
 										champLevel, visionWardsBoughtInGame, sightWardsBoughtInGame, wardsPlaced, wardsKilled, firstBloodKill,
-										firstBloodAssist, firstTowerKill, firstTowerAssist, firstInhibitorKill, firstInhibitorAssist)
+										firstBloodAssist, firstTowerKill, firstTowerAssist, firstInhibitorKill, firstInhibitorAssist, perk0,
+										perk1, perk2, perk3, perk4, perk5, perkPrimaryStyle, perkSubStyle)
 										VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
 										%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-										%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+										%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
 										(gameId, platformId, gameCreation, gameDuration, queueId, mapId, seasonId, gameVersion,
 										gameMode, gameType, teamId, participantId, accountId, summonerName, summonerId,
 										matchHistoryUri, championId, spell1Id, spell2Id, role, lane, win, item0, item1,
@@ -401,7 +420,8 @@ async def main():
 										goldEarned, goldSpent, turretKills, inhibitorKills, totalMinionsKilled, neutralMinionsKilled,
 										neutralMinionsKilledTeamJungle, neutralMinionsKilledEnemyJungle, totalTimeCrowdControlDealt,
 										champLevel, visionWardsBoughtInGame, sightWardsBoughtInGame, wardsPlaced, wardsKilled, firstBloodKill,
-										firstBloodAssist, firstTowerKill, firstTowerAssist, firstInhibitorKill, firstInhibitorAssist))
+										firstBloodAssist, firstTowerKill, firstTowerAssist, firstInhibitorKill, firstInhibitorAssist, perk0,
+										perk1, perk2, perk3, perk4, perk5, perkPrimaryStyle, perkSubStyle))
 
 					connection.commit()
 				print("Match Data Import Done")
