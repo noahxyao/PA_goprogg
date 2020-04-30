@@ -10,17 +10,12 @@ Things to keep in mind when new patches release:
 Further Things to be done:
 
 * Integrate DB for faster processing, also being independent from Riot API limits
-* Reconnect PyCharm Remote to Github
 * Look into setting up virtualenv or Pipenv to get a cleaner requirements.txt
-* Color Coding for win or loss boxes, similar to leagueofgraphs
+* Add tabs for champ mastery, etc
 * Add More interesting stats: 
-	-KDA
-	-KP
 	-DMG% in Team
 	-DMG/Min Difference?
 	-CS Difference @ 15 Min
-	-CS per Min
-	-Forward % FWD %
 	-FB Rate
     -Champion Mastery in Ranked
     
