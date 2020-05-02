@@ -157,15 +157,15 @@
                     <!-- /FlexQ Box-->
 
                     <p class="menu-label">
-                        More to read...
+                        Summoner Stats (20 Games)
                     </p>
                     <ul class="menu-list">
-                        <li><span class="tag is-white is-medium">Lorem</span></li>
-                        <li><span class="tag is-white is-medium">Ipsum</span></li>
-                        <li><span class="tag is-white is-medium">Dolor</span></li>
-                        <li><span class="tag is-white is-medium">Animi</span></li>
-                        <li><span class="tag is-white is-medium">Eximi</span></li>
-                        <li><span class="tag is-white is-medium">Nullius</span></li>
+                        <li><span class="tag is-white is-medium">FB Rate: {{ fbRate }}</span></li>
+                        <li><span class="tag is-white is-medium">FB Give Rate: {{ fbGiveRate }}</span></li>
+                        <li><span class="tag is-white is-medium">DPM Ø: {{ avgDPM }}</span></li>
+                        <li><span class="tag is-white is-medium">DMG% Ø: {{ avgDmgPart }}%</span></li>
+                        <li><span class="tag is-white is-medium">KP Ø: {{ avgKP }}%</span></li>
+                        <li><span class="tag is-white is-medium">GD% Ø: {{ avgGoldPart }}%</span></li>
                         <li><span class="tag is-white is-medium">Oxipi</span></li>
                         <li><span class="tag is-white is-medium">Vultus</span></li>
                         <li><span class="tag is-white is-medium">Voluptatis</span></li>
@@ -198,8 +198,11 @@
                                             <div class="winIndicator {{match.result}}"></div>
                                             <div class="content is-small">
                                                 <h3 class="resultText {{match.result}}">{{match.result}}</h3>
+                                                {{ match.lastGame }} hours ago
                                                 <br>
                                                 {{ match.queueType }}
+                                                <br>
+                                                {{ match.gameDurationMin }}m {{ match.gameDurationSec }}s
                                                 <br>
                                                 Game ID: {{match.gameId}}
                                             </div>
@@ -245,7 +248,13 @@
                                             <br>
                                             <b>KDA: {{ match.kda }}</b>
                                             <br>
+                                            {{ match.firstBlood }}
+                                            <br>
                                             <b>{{ match.largestMultiKill }}</b>
+                                            <br>
+                                            {{ match.totalCS }} ({{ match.cspMin }}) CS
+                                            <br>
+                                            DPM: {{ match.dpm }}
                                         </div>
                                     </div>
                                     <!-- /KDA -->
@@ -258,11 +267,17 @@
                                     <!-- Level, CS, Killpart, game MMR-->
                                     <div class="column is-2">
                                         <div class="content is-small has-text-centered">
-                                            {{ match.champLevel }}
-                                            <br>
-                                            {{ match.totalCS }} ({{ match.cspMin }}) CS
+                                            Level {{ match.champLevel }}
                                             <br>
                                             KP: {{ match.killPart }}
+                                            <br>
+                                            Dmg %: {{ match.dmgPart }}
+                                            <br>
+                                            Gold %: {{ match.goldEarnedPart }}
+                                            <br>
+                                            FWD: {{ match.fwd }}
+                                            <br>
+                                            Turret Dmg %: {{ match.turretDmgPart }}
                                         </div>
                                     </div>
                                     <!-- /Level, CS, Killpart, game MMR-->
@@ -315,6 +330,9 @@
                                     <!-- Team 1 -->
                                     <div class="column is-3">
                                         <article class="post">
+                                            <p class="is-tiny has-text-centered">
+                                                <b>{{ match.team1Kills }} / {{ match.team1Deaths }} / {{ match.team1Assists }}</b>
+                                            </p>
                                             <div class="media">
                                                 <div class="media-left">
                                                     <p class="image is-24x24">
@@ -409,6 +427,9 @@
                                     <!-- Team 2-->
                                     <div class="column is-3">
                                         <article class="post">
+                                            <p class="is-tiny has-text-centered">
+                                                <b>{{ match.team2Kills }} / {{ match.team2Deaths }} / {{ match.team2Assists }}</b>
+                                            </p>
                                             <div class="media">
                                                 <div class="media-left">
                                                     <p class="image is-24x24">
