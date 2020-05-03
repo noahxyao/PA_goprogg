@@ -8,6 +8,9 @@ from .dictionaries import queueType, champLinks
 import json
 import re
 import numpy
+# Webhook
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def requestSummonerData(region, summonerName, APIKey):
     URL = "https://" + str(region) + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + str(summonerName).replace(" ","").casefold() + "?api_key=" + str(APIKey)
@@ -542,9 +545,7 @@ def search(request):
     return render(request, template, { 'query': query})
 
 # Webhook
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+
 
 @csrf_exempt
 def update(request):
