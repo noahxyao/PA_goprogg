@@ -123,6 +123,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Settings
+# Django Settings.py
 goproGG/goproGG/settings.py
-
