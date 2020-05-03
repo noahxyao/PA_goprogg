@@ -122,4 +122,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-!/goproGG/goproGG/settings.py
+
+# Settings
+goproGG/goproGG/settings.py
+
