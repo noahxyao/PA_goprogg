@@ -11,6 +11,7 @@ import numpy
 # Webhook
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from git import Repo
 
 def requestSummonerData(region, summonerName, APIKey):
     URL = "https://" + str(region) + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + str(summonerName).replace(" ","").casefold() + "?api_key=" + str(APIKey)
