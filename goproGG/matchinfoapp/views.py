@@ -556,7 +556,7 @@ def update(request):
         stored on PythonAnywhere in the git.Repo() as parameter.
         Here the name of my directory is "test.pythonanywhere.com"
         '''
-        repo = git.Repo("PA_goprogg/")
+        repo = git.Repo("/home/goprogg/PA_goprogg/")
         origin = repo.remotes.origin
 
         origin.pull()
