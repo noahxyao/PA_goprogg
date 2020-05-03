@@ -8,6 +8,9 @@ from .dictionaries import queueType, champLinks
 import json
 import re
 import numpy
+# Webhook
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def requestSummonerData(region, summonerName, APIKey):
     URL = "https://" + str(region) + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + str(summonerName).replace(" ","").casefold() + "?api_key=" + str(APIKey)
@@ -531,6 +534,8 @@ def player(request):
 
     return render(request, 'player/cheatsheet_index.html', context)
 
+# Utility ############################################################
+
 def search(request):
     template = 'search/search.html'
 
@@ -538,3 +543,24 @@ def search(request):
 
 
     return render(request, template, { 'query': query})
+
+# Webhook
+
+
+@csrf_exempt
+def update(request):
+    if request.method == "POST":
+        '''
+        pass the path of the diectory where your project will be
+        stored on PythonAnywhere in the git.Repo() as parameter.
+        Here the name of my directory is "test.pythonanywhere.com"
+        '''
+        repo = git.Repo("goprogg.pythonanywhere.com/")
+        origin = repo.remotes.origin
+
+        origin.pull()
+
+        return HttpResponse("Updated code on PythonAnywhere")
+    else:
+        return HttpResponse("Couldn't update the code on PythonAnywhere")
+
