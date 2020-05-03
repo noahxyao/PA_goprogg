@@ -1,3 +1,6 @@
+# Django Settings with different db location
+goproGG/goproGG/settings.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
