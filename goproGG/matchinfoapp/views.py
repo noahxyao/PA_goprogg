@@ -11,7 +11,7 @@ import numpy
 # Webhook
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from git import Repo
+import git
 
 def requestSummonerData(region, summonerName, APIKey):
     URL = "https://" + str(region) + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + str(summonerName).replace(" ","").casefold() + "?api_key=" + str(APIKey)
@@ -556,7 +556,7 @@ def update(request):
         stored on PythonAnywhere in the git.Repo() as parameter.
         Here the name of my directory is "test.pythonanywhere.com"
         '''
-        repo = git.Repo("goprogg.pythonanywhere.com/")
+        repo = git.Repo("PA_goprogg/")
         origin = repo.remotes.origin
 
         origin.pull()
