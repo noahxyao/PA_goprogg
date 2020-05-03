@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['herokugoprogg.herokuapp.com',
                  '127.0.0.1',
+                 'noahyao.pythonanywhere.com',
                  ]
 
 
@@ -80,11 +81,11 @@ WSGI_APPLICATION = 'goproGG.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'RiotGames',
-        'USER': 'root', 
-        'PASSWORD': '123321Almitimo',
-        'HOST': '/opt/lampp/var/mysql/mysql.sock',
-        'PORT': '3306',   #my port is 3306
+        'NAME': 'noahyao$RiotGames',
+        'USER': 'noahyao',
+        'PASSWORD': '123321Almibene',
+        'HOST': 'noahyao.mysql.pythonanywhere-services.com',
+        #'PORT': '3306',   #my port is 3306
     }
 }
 

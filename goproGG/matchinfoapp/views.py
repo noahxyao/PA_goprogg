@@ -136,7 +136,7 @@ def getAvgData(allmatches, data):
     return avgValue
 
 region = "EUW1"
-APIKey = 'RGAPI-cd7d74c5-8ecd-4b9e-9571-be53052bf5c4'
+APIKey = 'RGAPI-9d293140-6046-48b1-9fc9-3c6b34a151a5'
 
 
 
