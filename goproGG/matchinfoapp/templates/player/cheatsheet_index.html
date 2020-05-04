@@ -204,7 +204,7 @@
                                                 <br>
                                                 {{ match.gameDurationMin }}m {{ match.gameDurationSec }}s
                                                 <br>
-                                                Game ID: {{match.gameId}}
+                                                Game ID: {{match.gameId}} {{ matchDetailInfoDistinct}}
                                             </div>
                                         </div>
                                     </div>
@@ -542,7 +542,7 @@
                             <i class="fas fa-info-circle"></i>
                         </span>
                             <div class="message-body">
-                                Block-scoped. Can be re-assigned.
+                                {{ responseMatchList }}
                             </div>
                         </article>
                         <pre><code class="language-javascript">let i = 0;</code></pre>
@@ -558,8 +558,7 @@
                                 <i class="fas fa-info-circle"></i>
                             </span>
                             <div class="message-body">
-                                Lorem ipsum dolor sit amet, mea ne viderer veritus menandri, id scaevola gloriatur
-                                instructior sit.
+                                {{ sumName }}
                             </div>
                         </article>
                         <pre><code class="language-javascript">let i = 0;</code></pre>

@@ -20,6 +20,9 @@ class MatchlistV4(models.Model):
     role = models.CharField(max_length=255, blank=True, null=True)
     lane = models.CharField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return self.accountid
+
     class Meta:
         managed = True
         db_table = 'MatchList_V4'
@@ -109,6 +112,9 @@ class MatchparticipantV4(models.Model):
     firstinhibitorkill = models.IntegerField(db_column='firstInhibitorKill', blank=True, null=True)  # Field name made lowercase.
     firstinhibitorassist = models.IntegerField(db_column='firstInhibitorAssist', blank=True, null=True)  # Field name made lowercase.
 
+    def __str__(self):
+        return self.gameid
+
     class Meta:
         managed = True
         db_table = 'MatchParticipant_V4'
@@ -142,6 +148,9 @@ class MatchteamV4(models.Model):
     riftheraldkills = models.IntegerField(db_column='riftHeraldKills', blank=True, null=True)  # Field name made lowercase.
     dominionvictoryscore = models.IntegerField(db_column='dominionVictoryScore', blank=True, null=True)  # Field name made lowercase.
 
+    def __str__(self):
+        return self.gameid
+
     class Meta:
         managed = True
         db_table = 'MatchTeam_V4'
@@ -156,6 +165,9 @@ class SummonerV4(models.Model):
     profileiconid = models.IntegerField(db_column='profileIconId', blank=True, null=True)  # Field name made lowercase.
     revisiondate = models.BigIntegerField(db_column='revisionDate', blank=True, null=True)  # Field name made lowercase.
     summonerlevel = models.IntegerField(db_column='summonerLevel', blank=True, null=True)  # Field name made lowercase.
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         managed = True
