@@ -162,7 +162,7 @@ def getDistinct(query, participantid, value):
             return i[value]
 
 region = "EUW1"
-APIKey = 'RGAPI-c61bbe2d-05ed-4caf-b5bb-471157d58fed'
+APIKey = 'RGAPI-4d789673-a91f-4c62-a8ba-028b3d342ab3'
 
 
 
@@ -378,17 +378,6 @@ def player(request):
             }
         )
 
-        # Get name of every participant
-        # participantList = []
-        # participantInfo = {}
-        # for participant in matchListInfo['matchDetailInfox']:
-        #     participantList.append(participant['summonername'])
-        #     participantInfo.update({'participantid': participant['participantid'],
-        #                             'teamid': participant['teamid'],
-        #                             'summonername': participant['summonername'],
-        #                             })
-        # participantList = list(dict.fromkeys(participantList))
-
         # Get match information of summoner
         for i in matchListInfo['matchDetailInfox']:
             if matchListInfo['matchDetailInfox'][i]['summonername'] == responseSummonerData['name']:
@@ -428,130 +417,100 @@ def player(request):
                                       'dpm': dpm,
                                       })
 
-                # Adding Team KDA
-                team1Kills = 0
-                team1Deaths = 0
-                team1Assists = 0
-                team2Kills = 0
-                team2Deaths = 0
-                team2Assists = 0
-                team1Kda = [team1Kills, team1Deaths, team1Assists]
-                team2Kda = [team2Kills, team2Deaths, team2Assists]
-                teamKdaList = [team1Kda, team2Kda]
-
-                # for participantKills in matchListInfo['matchDetailInfo']:
-                #     teamKdaList[0][0] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['kills']
-                #     teamKdaList[0][1] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['deaths']
-                #     teamKdaList[0][2] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['assists']
-                # for participantKills in range(5, 10):
-                #     teamKdaList[1][0] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['kills']
-                #     teamKdaList[1][1] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['deaths']
-                #     teamKdaList[1][2] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['assists']
-                #
-                #     matchListInfo.update({'team1Kills': teamKdaList[0][0],
-                #                           'team1Deaths': teamKdaList[0][1],
-                #                           'team1Assists': teamKdaList[0][2],
-                #                           'team2Kills': teamKdaList[1][0],
-                #                           'team2Deaths': teamKdaList[1][1],
-                #                           'team2Assists': teamKdaList[1][2],
-                #                           })
-
                 break
 
+        # Adding Team KDA
+        team1Kills = 0
+        team1Deaths = 0
+        team1Assists = 0
+        team2Kills = 0
+        team2Deaths = 0
+        team2Assists = 0
+        team1Kda = [team1Kills, team1Deaths, team1Assists]
+        team2Kda = [team2Kills, team2Deaths, team2Assists]
+        teamKdaList = [team1Kda, team2Kda]
 
-    #
-    #     # Adding Team KDA
-    #     team1Kills = 0
-    #     team1Deaths = 0
-    #     team1Assists = 0
-    #     team2Kills = 0
-    #     team2Deaths = 0
-    #     team2Assists = 0
-    #     team1Kda = [team1Kills, team1Deaths, team1Assists]
-    #     team2Kda = [team2Kills, team2Deaths, team2Assists]
-    #     teamKdaList = [team1Kda, team2Kda]
-    #
-    #     for participantKills in range(5):
-    #         teamKdaList[0][0] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['kills']
-    #         teamKdaList[0][1] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['deaths']
-    #         teamKdaList[0][2] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['assists']
-    #     for participantKills in range(5, 10):
-    #         teamKdaList[1][0] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['kills']
-    #         teamKdaList[1][1] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['deaths']
-    #         teamKdaList[1][2] += matchListInfo['matchDetailInfo']['participants'][participantKills]['stats']['assists']
-    #
-    #         matchListInfo.update({'team1Kills': teamKdaList[0][0],
-    #                               'team1Deaths': teamKdaList[0][1],
-    #                               'team1Assists': teamKdaList[0][2],
-    #                               'team2Kills': teamKdaList[1][0],
-    #                               'team2Deaths': teamKdaList[1][1],
-    #                               'team2Assists': teamKdaList[1][2],
-    #                               })
-    #
-    #     # Adding KillParticipation
-    #     teamKills1 = 0
-    #     teamKills2 = 0
-    #     teamKillsList = [teamKdaList[0][0], teamKdaList[1][0]]
-    #
-    #     try:
-    #         killPart = round((matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['kills'] + matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['assists'])/teamKillsList[teamId], 2)
-    #         matchListInfo.update({'killPart': "{0:.0%}".format(killPart)})
-    #     except ZeroDivisionError:
-    #         killPart = "No Kills"
-    #         matchListInfo.update({'killPart': killPart})
-    #
-    #     # Dmg Participation: Dmg Dealt to Champions
-    #     team1DamageChamps = 0
-    #     team2DamageChamps = 0
-    #     teamDmgChampsList = [team1DamageChamps, team2DamageChamps]
-    #
-    #     for participantDmg in range(5):
-    #         teamDmgChampsList[0] += matchListInfo['matchDetailInfo']['participants'][participantDmg]['stats']['totalDamageDealtToChampions']
-    #     for participantDmg in range(5,10):
-    #         teamDmgChampsList[1] += matchListInfo['matchDetailInfo']['participants'][participantDmg]['stats']['totalDamageDealtToChampions']
-    #
-    #     try:
-    #         dmgPart = round(matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['totalDamageDealtToChampions'] / teamDmgChampsList[teamId],2)
-    #         matchListInfo.update({'dmgPart': "{0:.0%}".format(dmgPart)})
-    #     except ZeroDivisionError:
-    #         dmgPart = "No Dmg dealt"
-    #         matchListInfo.update({'dmgPart': dmgPart})
-    #
-    #
-    #     # Dmg Dealt to Turret Percentage in Team
-    #     team1DamageTurrets = 0
-    #     team2DamageTurrets = 0
-    #     teamTurretDmgList = [team1DamageTurrets, team2DamageTurrets]
-    #
-    #     for participantDmg in range(5):
-    #         teamTurretDmgList[0] += matchListInfo['matchDetailInfo']['participants'][participantDmg]['stats']['damageDealtToTurrets']
-    #     for participantDmg in range(5, 10):
-    #         teamTurretDmgList[1] += matchListInfo['matchDetailInfo']['participants'][participantDmg]['stats']['damageDealtToTurrets']
-    #
-    #     try:
-    #         turretDmgPart = round(matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['damageDealtToTurrets'] / teamTurretDmgList[teamId], 2)
-    #         matchListInfo.update({'turretDmgPart': "{0:.0%}".format(turretDmgPart)})
-    #     except ZeroDivisionError:
-    #         turretDmgPart = "No Turret Dmg dealt"
-    #         matchListInfo.update({'turretDmgPart': turretDmgPart})
-    #
-    #     # Gold Percentage in Team
-    #     team1GoldEarned = 0
-    #     team2GoldEarned = 0
-    #     teamGoldEarnedList = [team1GoldEarned, team2GoldEarned]
-    #
-    #     for participantGld in range(5):
-    #         teamGoldEarnedList[0] += matchListInfo['matchDetailInfo']['participants'][participantGld]['stats']['goldEarned']
-    #     for participantGld in range(5, 10):
-    #         teamGoldEarnedList[1] += matchListInfo['matchDetailInfo']['participants'][participantGld]['stats']['goldEarned']
-    #
-    #     try:
-    #         goldEarnedPart = round(matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['goldEarned'] / teamGoldEarnedList[teamId], 2)
-    #         matchListInfo.update({'goldEarnedPart': "{0:.0%}".format(goldEarnedPart)})
-    #     except ZeroDivisionError:
-    #         goldEarnedPart = "No Gold Earned"
-    #         matchListInfo.update({'goldEarnedPart': goldEarnedPart})
-    #
+        for participant in range(1, 6):
+            teamKdaList[0][0] += matchListInfo['matchDetailInfox'][participant]['kills']
+            teamKdaList[0][1] += matchListInfo['matchDetailInfox'][participant]['deaths']
+            teamKdaList[0][2] += matchListInfo['matchDetailInfox'][participant]['assists']
+        for participant in range(6, 11):
+            teamKdaList[1][0] += matchListInfo['matchDetailInfox'][participant]['kills']
+            teamKdaList[1][1] += matchListInfo['matchDetailInfox'][participant]['deaths']
+            teamKdaList[1][2] += matchListInfo['matchDetailInfox'][participant]['assists']
+
+        matchListInfo.update({'team1Kills': teamKdaList[0][0],
+                              'team1Deaths': teamKdaList[0][1],
+                              'team1Assists': teamKdaList[0][2],
+                              'team2Kills': teamKdaList[1][0],
+                              'team2Deaths': teamKdaList[1][1],
+                              'team2Assists': teamKdaList[1][2],
+                              })
+
+        # Adding KillParticipation
+        teamKills1 = 0
+        teamKills2 = 0
+        teamKillsDict = {100: teamKdaList[0][0], 200: teamKdaList[1][0]}
+
+        try:
+            killPart = round((matchListInfo['matchDetailInfox'][participantId]['kills'] + matchListInfo['matchDetailInfox'][participantId]['assists'])/teamKillsDict[teamId], 2)
+            matchListInfo.update({'killPart': "{0:.0%}".format(killPart)})
+        except ZeroDivisionError:
+            killPart = "No Kills"
+            matchListInfo.update({'killPart': killPart})
+
+        # Dmg Participation: Dmg Dealt to Champions
+        team1DamageChamps = 0
+        team2DamageChamps = 0
+        teamDmgChampsDict = {100: team1DamageChamps, 200: team2DamageChamps}
+
+        for participantDmg in range(1,6):
+            teamDmgChampsDict[100] += matchListInfo['matchDetailInfox'][participantDmg]['totaldamagedealttochampions']
+        for participantDmg in range(6,11):
+            teamDmgChampsDict[200] += matchListInfo['matchDetailInfox'][participantDmg]['totaldamagedealttochampions']
+
+        try:
+            dmgPart = round(matchListInfo['matchDetailInfox'][participantId]['totaldamagedealttochampions'] / teamDmgChampsDict[teamId],2)
+            matchListInfo.update({'dmgPart': "{0:.0%}".format(dmgPart)})
+        except ZeroDivisionError:
+            dmgPart = "No Dmg dealt"
+            matchListInfo.update({'dmgPart': dmgPart})
+
+
+        # Dmg Dealt to Turret Percentage in Team
+        team1DamageTurrets = 0
+        team2DamageTurrets = 0
+        teamTurretDmgDict = {100: team1DamageTurrets, 200: team2DamageTurrets}
+
+        for participantDmg in range(1,6):
+            teamTurretDmgDict[100] += matchListInfo['matchDetailInfox'][participantDmg]['damagedealttoturrets']
+        for participantDmg in range(6, 11):
+            teamTurretDmgDict[200] += matchListInfo['matchDetailInfox'][participantDmg]['damagedealttoturrets']
+
+        try:
+            turretDmgPart = round(matchListInfo['matchDetailInfox'][participantId]['damagedealttoturrets'] / teamTurretDmgDict[teamId], 2)
+            matchListInfo.update({'turretDmgPart': "{0:.0%}".format(turretDmgPart)})
+        except ZeroDivisionError:
+            turretDmgPart = "No Turret Dmg dealt"
+            matchListInfo.update({'turretDmgPart': turretDmgPart})
+
+        # Gold Percentage in Team
+        team1GoldEarned = 0
+        team2GoldEarned = 0
+        teamGoldEarnedDict = {100: team1GoldEarned, 200: team2GoldEarned}
+
+        for participantGld in range(1,6):
+            teamGoldEarnedDict[100] += matchListInfo['matchDetailInfox'][participantGld]['goldearned']
+        for participantGld in range(6, 11):
+            teamGoldEarnedDict[200] += matchListInfo['matchDetailInfox'][participantGld]['goldearned']
+
+        try:
+            goldEarnedPart = round(matchListInfo['matchDetailInfox'][participantId]['goldearned'] / teamGoldEarnedDict[teamId], 2)
+            matchListInfo.update({'goldEarnedPart': "{0:.0%}".format(goldEarnedPart)})
+        except ZeroDivisionError:
+            goldEarnedPart = "No Gold Earned"
+            matchListInfo.update({'goldEarnedPart': goldEarnedPart})
+
     #
     #     # Get Forward Percentage
     #     # Create a List with all positions in one game
@@ -589,87 +548,87 @@ def player(request):
     #     # Calc FB Give Rate
     #     getFbGiveRate(matchListInfo['matchTimeline']['frames'], fbGiveList)
     #
-    #     # Get more matchDetail Information
-    #     matchListInfo.update({'spell1Id': matchListInfo['matchDetailInfo']['participants'][participantId]['spell1Id'],
-    #                           'spell2Id': matchListInfo['matchDetailInfo']['participants'][participantId]['spell2Id'],
-    #                           'spell1Link': getSumSpellLink(sumSpells['data'].items(),matchListInfo['matchDetailInfo']['participants'][participantId]['spell1Id']),
-    #                           'spell2Link': getSumSpellLink(sumSpells['data'].items(),matchListInfo['matchDetailInfo']['participants'][participantId]['spell2Id']),
-    #                           'item0': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item0'],
-    #                           'item1': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item1'],
-    #                           'item2': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item2'],
-    #                           'item3': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item3'],
-    #                           'item4': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item4'],
-    #                           'item5': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item5'],
-    #                           'item6': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item6'],
-    #                           'kills': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['kills'],
-    #                           'deaths': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['deaths'],
-    #                           'assists': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['assists'],
-    #                           'champLevel': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['champLevel'],
-    #                           'visionScore': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['visionScore'],
-    #                           'perkPrimaryStyle': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perkPrimaryStyle'],
-    #                           'perkSubStyle': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perkSubStyle'],
-    #                           'perk0': matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perk0'],
-    #                           'keystoneLink': getRunesLink(runes,matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perkPrimaryStyle'],matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perk0']),
-    #                           'keystone2Link': getSecRunesLink(runes, matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['perkSubStyle']),
-    #
-    #                           })
-    #
-    #     # error handling in dict=========================================================================================================
-    #     # Zero Division of KDA
-    #     try:
-    #         matchListInfo.update({'kda': round((matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['kills'] + matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['assists'])/matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['deaths'],2)})
-    #     except ZeroDivisionError:
-    #         matchListInfo.update({'kda': "Perfect"})
-    #
-    #     # emtpy item slots directed to grey placeholder if id= 0
-    #     for itemslot in range(7):
-    #         if matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item' + str(itemslot)] == 0:
-    #             matchListInfo.update({str('item' + str(itemslot) + 'Link'): "https://opgg-static.akamaized.net/images/pattern/opacity.1.png"})
-    #         else:
-    #             matchListInfo.update({str('item' + str(itemslot) + 'Link'): getItemLink(items['data'].items(),matchListInfo['matchDetailInfo']['participants'][participantId]['stats']['item' + str(itemslot)]),})
-    #
-    #
+        # Get more matchDetail Information
+        matchListInfo.update({'spell1Id': matchListInfo['matchDetailInfox'][participantId]['spell1id'],
+                              'spell2Id': matchListInfo['matchDetailInfox'][participantId]['spell2id'],
+                              'spell1Link': getSumSpellLink(sumSpells['data'].items(),matchListInfo['matchDetailInfox'][participantId]['spell1id']),
+                              'spell2Link': getSumSpellLink(sumSpells['data'].items(),matchListInfo['matchDetailInfox'][participantId]['spell2id']),
+                              'item0': matchListInfo['matchDetailInfox'][participantId]['item0'],
+                              'item1': matchListInfo['matchDetailInfox'][participantId]['item1'],
+                              'item2': matchListInfo['matchDetailInfox'][participantId]['item2'],
+                              'item3': matchListInfo['matchDetailInfox'][participantId]['item3'],
+                              'item4': matchListInfo['matchDetailInfox'][participantId]['item4'],
+                              'item5': matchListInfo['matchDetailInfox'][participantId]['item5'],
+                              'item6': matchListInfo['matchDetailInfox'][participantId]['item6'],
+                              'kills': matchListInfo['matchDetailInfox'][participantId]['kills'],
+                              'deaths': matchListInfo['matchDetailInfox'][participantId]['deaths'],
+                              'assists': matchListInfo['matchDetailInfox'][participantId]['assists'],
+                              'champLevel': matchListInfo['matchDetailInfox'][participantId]['champlevel'],
+                              'visionScore': matchListInfo['matchDetailInfox'][participantId]['visionscore'],
+                              'perkPrimaryStyle': matchListInfo['matchDetailInfox'][participantId]['perkprimarystyle'],
+                              'perkSubStyle': matchListInfo['matchDetailInfox'][participantId]['perksubstyle'],
+                              'perk0': matchListInfo['matchDetailInfox'][participantId]['perk0'],
+                              'keystoneLink': getRunesLink(runes,matchListInfo['matchDetailInfox'][participantId]['perkprimarystyle'],matchListInfo['matchDetailInfox'][participantId]['perk0']),
+                              'keystone2Link': getSecRunesLink(runes, matchListInfo['matchDetailInfox'][participantId]['perksubstyle']),
+
+                              })
+
+        # error handling in dict=========================================================================================================
+        # Zero Division of KDA
+        try:
+            matchListInfo.update({'kda': round((matchListInfo['matchDetailInfox'][participantId]['kills'] + matchListInfo['matchDetailInfox'][participantId]['assists'])/matchListInfo['matchDetailInfox'][participantId]['deaths'],2)})
+        except ZeroDivisionError:
+            matchListInfo.update({'kda': "Perfect"})
+
+        # emtpy item slots directed to grey placeholder if id= 0
+        for itemslot in range(7):
+            if matchListInfo['matchDetailInfox'][participantId]['item' + str(itemslot)] == 0:
+                matchListInfo.update({str('item' + str(itemslot) + 'Link'): "https://opgg-static.akamaized.net/images/pattern/opacity.1.png"})
+            else:
+                matchListInfo.update({str('item' + str(itemslot) + 'Link'): getItemLink(items['data'].items(),matchListInfo['matchDetailInfox'][participantId]['item' + str(itemslot)]),})
+
+
         # Finally add all updates to a list
         matchList_data.append(matchListInfo)
 
         index += 1
         if index == limit:
             break
-    #
-    # #                                #
-    # # Stats involving multiple games #
-    # #                                #
-    #
-    # # Get SoloQ and flexQ last game played
-    # lastSoloQGame = 'Longer than 20 Games ago'
-    # lastFlexQGame = 'Longer than 20 games ago'
-    # for entry in matchList_data:
-    #     if entry['queue'] == 420:
-    #         lastSoloQGame = 'Last Played: ' + str(entry['lastGame']) + ' hours ago'
-    #         break
-    # for entry in matchList_data:
-    #     if entry['queue'] == 440:
-    #         lastFlexQGame = 'Last Played: ' + str(entry['lastGame']) + ' hours ago'
-    #         break
-    #
+
+    #                                #
+    # Stats involving multiple games #
+    #                                #
+
+    # Get SoloQ and flexQ last game played
+    lastSoloQGame = 'Longer than 20 Games ago'
+    lastFlexQGame = 'Longer than 20 games ago'
+    for entry in matchList_data:
+        if entry['queue'] == 420:
+            lastSoloQGame = 'Last Played: ' + str(entry['lastGame']) + ' hours ago'
+            break
+    for entry in matchList_data:
+        if entry['queue'] == 440:
+            lastFlexQGame = 'Last Played: ' + str(entry['lastGame']) + ' hours ago'
+            break
+
     # # FB rate
     # fbRate = "{0:.0%}".format(fbList.count(True) / len(matchList_data))
     #
     # # FB Give Rate
     # fbGiveRate = "{0:.0%}".format(fbGiveList.count(True) / len(matchList_data))
-    #
-    # # Get summoner average data
-    # #DPM
-    # avgDPM = getAvgData(matchList_data, 'dpm')
-    #
-    # #Damage %
-    # avgDmgPart = getAvgData(matchList_data, 'dmgPart')
-    #
-    # #KP
-    # avgKP = getAvgData(matchList_data, 'killPart')
-    #
-    # #Gold%
-    # avgGoldPart = getAvgData(matchList_data, 'goldEarnedPart')
+
+    # Get summoner average data
+    #DPM
+    avgDPM = getAvgData(matchList_data, 'dpm')
+
+    #Damage %
+    avgDmgPart = getAvgData(matchList_data, 'dmgPart')
+
+    #KP
+    avgKP = getAvgData(matchList_data, 'killPart')
+
+    #Gold%
+    avgGoldPart = getAvgData(matchList_data, 'goldEarnedPart')
 
 
 
@@ -680,20 +639,18 @@ def player(request):
         'matchList_data': matchList_data,
         # 'matchDetail_data': matchDetail_data,
         'responseMatchList': responseMatchList,
-        # 'lastSoloQGame': lastSoloQGame,
-        # 'lastFlexQGame': lastFlexQGame,
-        # 'soloqWR': soloqWR,
-        # 'flexqWR': flexqWR,
+        'lastSoloQGame': lastSoloQGame,
+        'lastFlexQGame': lastFlexQGame,
+        'soloqWR': soloqWR,
+        'flexqWR': flexqWR,
         # 'rangeTen': rangeTen,
         # 'fbRate': fbRate,
         # 'fbGiveRate': fbGiveRate,
-        # 'avgDPM': avgDPM,
-        # 'avgDmgPart': avgDmgPart,
-        # 'avgKP': avgKP,
-        # 'avgGoldPart': avgGoldPart,
+        'avgDPM': avgDPM,
+        'avgDmgPart': avgDmgPart,
+        'avgKP': avgKP,
+        'avgGoldPart': avgGoldPart,
         'sumName': sumName,
-        # 'participantlist': participantList,
-        'matchDetailInfoDistinct': matchDetailInfoDistinct,
     }
 
     if bool(responseRankedData)== True:
