@@ -111,6 +111,14 @@ class MatchparticipantV4(models.Model):
     firsttowerassist = models.IntegerField(db_column='firstTowerAssist', blank=True, null=True)  # Field name made lowercase.
     firstinhibitorkill = models.IntegerField(db_column='firstInhibitorKill', blank=True, null=True)  # Field name made lowercase.
     firstinhibitorassist = models.IntegerField(db_column='firstInhibitorAssist', blank=True, null=True)  # Field name made lowercase.
+    perk0 = models.IntegerField(db_column='perk0', blank=True, null=True)  # Field name made lowercase.
+    perk1 = models.IntegerField(db_column='perk1', blank=True, null=True)  # Field name made lowercase.
+    perk2 = models.IntegerField(db_column='perk2', blank=True, null=True)  # Field name made lowercase.
+    perk3 = models.IntegerField(db_column='perk3', blank=True, null=True)  # Field name made lowercase.
+    perk4 = models.IntegerField(db_column='perk4', blank=True, null=True)  # Field name made lowercase.
+    perk5 = models.IntegerField(db_column='perk5', blank=True, null=True)  # Field name made lowercase.
+    perkprimarystyle = models.IntegerField(db_column='perkPrimaryStyle', blank=True, null=True)  # Field name made lowercase.
+    perksubstyle = models.IntegerField(db_column='perkSubStyle', blank=True, null=True)  # Field name made lowercase.
 
     def __str__(self):
         return self.gameid

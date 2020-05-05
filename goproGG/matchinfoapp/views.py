@@ -237,6 +237,7 @@ def player(request):
     fbGiveList = []
     rangeTen = [1,2,3,4,5,6,7,8,9,10]
 
+    # Start populating my dataset ###################################################################################################
     for i in range(len(responseMatchList)):
         matchListInfo = {
             'gameId': responseMatchList[i].gameid,
@@ -256,8 +257,14 @@ def player(request):
             # 'matchTimeline': requestMatchTimelineDB(responseMatchList[i].gameid),
         }
 
-        # Remove duplicates from matchDetailInfo
+        # Remove duplicates from matchDetailInfo =================================
+        # Create dict in dict
         matchDetailInfo_Dict = {}
+        keys = range(len(matchListInfo['matchDetailInfo']))
+        for key in keys:
+            matchDetailInfo_Dict[str(key)] = None
+
+        partCounter = 0
         for participant in matchListInfo['matchDetailInfo']:
             matchDetailInfo2 = {
                 'gameid': participant['gameid'],
@@ -273,76 +280,147 @@ def player(request):
                 'teamid': participant['teamid'],
                 'participantid': participant['participantid'],
                 'accountid': participant['accountid'],
-
+                'summonername': participant['summonername'],
+                'summonerid': participant['summonerid'],
+                'matchhistoryuri': participant['matchhistoryuri'],
+                'championid': participant['championid'],
+                'spell1id': participant['spell1id'],
+                'spell2id': participant['spell2id'],
+                'role': participant['role'],
+                'lane': participant['lane'],
+                'win': participant['win'],
+                'item0': participant['item0'],
+                'item1': participant['item1'],
+                'item2': participant['item2'],
+                'item3': participant['item3'],
+                'item4': participant['item4'],
+                'item5': participant['item5'],
+                'item6': participant['item6'],
+                'kills': participant['kills'],
+                'deaths': participant['deaths'],
+                'assists': participant['assists'],
+                'largestkillingspree': participant['largestkillingspree'],
+                'largestmultikill': participant['largestmultikill'],
+                'killingsprees': participant['killingsprees'],
+                'longesttimespentliving': participant['longesttimespentliving'],
+                'doublekills': participant['doublekills'],
+                'triplekills': participant['triplekills'],
+                'quadrakills': participant['quadrakills'],
+                'pentakills': participant['pentakills'],
+                'unrealkills': participant['unrealkills'],
+                'totaldamagedealt': participant['totaldamagedealt'],
+                'magicdamagedealt': participant['magicdamagedealt'],
+                'physicaldamagedealt': participant['physicaldamagedealt'],
+                'truedamagedealt': participant['truedamagedealt'],
+                'largestcriticalstrike': participant['largestcriticalstrike'],
+                'totaldamagedealttochampions': participant['totaldamagedealttochampions'],
+                'magicdamagedealttochampions': participant['magicdamagedealttochampions'],
+                'physicaldamagedealttochampions': participant['physicaldamagedealttochampions'],
+                'truedamagedealttochampions': participant['truedamagedealttochampions'],
+                'totalheal': participant['totalheal'],
+                'totalunitshealed': participant['totalunitshealed'],
+                'damageselfmitigated': participant['damageselfmitigated'],
+                'damagedealttoobjectives': participant['damagedealttoobjectives'],
+                'damagedealttoturrets': participant['damagedealttoturrets'],
+                'visionscore': participant['visionscore'],
+                'timeccingothers': participant['timeccingothers'],
+                'totaldamagetaken': participant['totaldamagetaken'],
+                'magicaldamagetaken': participant['magicaldamagetaken'],
+                'physicaldamagetaken': participant['physicaldamagetaken'],
+                'truedamagetaken': participant['truedamagetaken'],
+                'goldearned': participant['goldearned'],
+                'goldspent': participant['goldspent'],
+                'turretkills': participant['turretkills'],
+                'inhibitorkills': participant['inhibitorkills'],
+                'totalminionskilled': participant['totalminionskilled'],
+                'neutralminionskilled': participant['neutralminionskilled'],
+                'neutralminionskilledteamjungle': participant['neutralminionskilledteamjungle'],
+                'neutralminionskilledenemyjungle': participant['neutralminionskilledenemyjungle'],
+                'totaltimecrowdcontroldealt': participant['totaltimecrowdcontroldealt'],
+                'champlevel': participant['champlevel'],
+                'visionwardsboughtingame': participant['visionwardsboughtingame'],
+                'sightwardsboughtingame': participant['sightwardsboughtingame'],
+                'wardsplaced': participant['wardsplaced'],
+                'wardskilled': participant['wardskilled'],
+                'firstbloodkill': participant['firstbloodkill'],
+                'firstbloodassist': participant['firstbloodassist'],
+                'firsttowerkill': participant['firsttowerkill'],
+                'firsttowerassist': participant['firsttowerassist'],
+                'firstinhibitorkill': participant['firstinhibitorkill'],
+                'firstinhibitorassist': participant['firstinhibitorassist'],
+                'perk0': participant['perk0'],
+                'perk1': participant['perk1'],
+                'perk2': participant['perk2'],
+                'perk3': participant['perk3'],
+                'perk4': participant['perk4'],
+                'perk5': participant['perk5'],
+                'perkprimarystyle': participant['perkprimarystyle'],
+                'perksubstyle': participant['perksubstyle'],
             }
-            matchDetailInfo_Dict.update(matchDetailInfo2)
+            matchDetailInfo_Dict.update({str(partCounter): matchDetailInfo2})
+            partCounter += 1
+        # Filter out duplicate db rows
         matchDetailInfoDistinct = {}
         for key, value in matchDetailInfo_Dict.items():
             if value not in matchDetailInfoDistinct.values():
                 matchDetailInfoDistinct[key] = value
+        # Clean dict names to participant numbers
+        keyList = [i + 1 for i in range(10)]
+        matchDetailInfoDistinctClean = dict(zip(keyList, list(matchDetailInfoDistinct.values())))
 
-
-
-
+        matchListInfo.update({'matchDetailInfox': matchDetailInfoDistinctClean})
+        # Dataset Details done ########################################################################################################
 
         # Get champ pictures for all participants of same game
-        matchListInfo.update({
-            "champLink_1": getChampLink(champLinks.items(),getDistinct(matchListInfo['matchDetailInfo'], 1, 'championid')),
-            "champLink_2": getChampLink(champLinks.items(),getDistinct(matchListInfo['matchDetailInfo'], 2, 'championid')),
-            "champLink_3": getChampLink(champLinks.items(),getDistinct(matchListInfo['matchDetailInfo'], 3, 'championid')),
-            "champLink_4": getChampLink(champLinks.items(),getDistinct(matchListInfo['matchDetailInfo'], 4, 'championid')),
-            "champLink_5": getChampLink(champLinks.items(),getDistinct(matchListInfo['matchDetailInfo'], 5, 'championid')),
-            "champLink_6": getChampLink(champLinks.items(),getDistinct(matchListInfo['matchDetailInfo'], 6, 'championid')),
-            "champLink_7": getChampLink(champLinks.items(),getDistinct(matchListInfo['matchDetailInfo'], 7, 'championid')),
-            "champLink_8": getChampLink(champLinks.items(),getDistinct(matchListInfo['matchDetailInfo'], 8, 'championid')),
-            "champLink_9": getChampLink(champLinks.items(),getDistinct(matchListInfo['matchDetailInfo'], 9, 'championid')),
-            "champLink_10": getChampLink(champLinks.items(),getDistinct(matchListInfo['matchDetailInfo'], 10, 'championid')),
+        for participant in range(1,11):
+            matchListInfo.update({
+                "champLink_" + str(participant): getChampLink(champLinks.items(),matchListInfo['matchDetailInfox'][participant]['championid']),
             }
         )
 
         # Get name of every participant
-        participantList = []
-        participantInfo = {}
-        for i in matchListInfo['matchDetailInfo']:
-            participantList.append(i['summonername'])
-            participantInfo.update({'participantid': i['participantid'],
-                                    'teamid': i['teamid'],
-                                    'summonername': i['summonername'],
-                                    })
-        participantList = list(dict.fromkeys(participantList))
+        # participantList = []
+        # participantInfo = {}
+        # for participant in matchListInfo['matchDetailInfox']:
+        #     participantList.append(participant['summonername'])
+        #     participantInfo.update({'participantid': participant['participantid'],
+        #                             'teamid': participant['teamid'],
+        #                             'summonername': participant['summonername'],
+        #                             })
+        # participantList = list(dict.fromkeys(participantList))
 
         # Get match information of summoner
-        for i in matchListInfo['matchDetailInfo']:
-            if i['summonername'] == responseSummonerData['name']:
-                participantId = i['participantid']
-                teamId = i['teamid']
+        for i in matchListInfo['matchDetailInfox']:
+            if matchListInfo['matchDetailInfox'][i]['summonername'] == responseSummonerData['name']:
+                participantId = matchListInfo['matchDetailInfox'][i]['participantid']
+                teamId = matchListInfo['matchDetailInfox'][i]['teamid']
                 # Get match result for summoner's participantId
-                if i['win'] == True:
+                if matchListInfo['matchDetailInfox'][i]['win'] == True:
                     matchListInfo.update({"result": 'Victory'})
                 else:
                     matchListInfo.update({"result": 'Defeat'})
 
                 # Add Multikills
-                if i['largestmultikill'] > 1:
+                if matchListInfo['matchDetailInfox'][i]['largestmultikill'] > 1:
                     killDict = {'2': 'Doublekill',
                                 '3': 'Triplekill',
                                 '4': 'Quadrakill',
                                 '5': 'Pentakill',
                                 }
-                    matchListInfo.update({'largestMultiKill': killDict[str(i['largestmultikill'])]})
+                    matchListInfo.update({'largestMultiKill': killDict[str(matchListInfo['matchDetailInfox'][i]['largestmultikill'])]})
 
                 # Add total CS
-                totalCS = i['totalminionskilled'] + i['neutralminionskilled']
+                totalCS = matchListInfo['matchDetailInfox'][i]['totalminionskilled'] + matchListInfo['matchDetailInfox'][i]['neutralminionskilled']
                 matchListInfo.update({'totalCS': totalCS})
 
                 # Add Game Duration and duration related variables
-                gameDuration = i['gameduration']
+                gameDuration = matchListInfo['matchDetailInfox'][i]['gameduration']
                 gameDurationMin = time.strftime('%M', time.gmtime(gameDuration))
                 gameDurationSec = time.strftime('%S', time.gmtime(gameDuration))
                 # cs per min
                 cspMin = round(totalCS/(int(gameDurationMin) + int(gameDurationSec)/60),2)
                 # dmg per min
-                dpm = round(i['totaldamagedealttochampions'] / (int(gameDurationMin) + int(gameDurationSec)/60),2)
+                dpm = round(matchListInfo['matchDetailInfox'][i]['totaldamagedealttochampions'] / (int(gameDurationMin) + int(gameDurationSec)/60),2)
 
                 matchListInfo.update({'gameDurationMin': gameDurationMin,
                                       'gameDurationSec': gameDurationSec,
@@ -614,7 +692,7 @@ def player(request):
         # 'avgKP': avgKP,
         # 'avgGoldPart': avgGoldPart,
         'sumName': sumName,
-        'participantlist': participantList,
+        # 'participantlist': participantList,
         'matchDetailInfoDistinct': matchDetailInfoDistinct,
     }
 
