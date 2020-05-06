@@ -162,7 +162,7 @@ def getDistinct(query, participantid, value):
             return i[value]
 
 region = "EUW1"
-APIKey = 'RGAPI-4d789673-a91f-4c62-a8ba-028b3d342ab3'
+APIKey = 'RGAPI-9d45440f-231b-49dc-b601-1dd545c3bb99'
 
 
 
@@ -174,7 +174,7 @@ def player(request):
     summonerName = query
 
     # manually enter sumName without search box
-    sumName = SummonerV4.objects.filter(name__icontains=query)[0].name
+    # sumName = SummonerV4.objects.filter(name__icontains=query)[0].name
 
     # Get Real Time User data from Riot API, get all champ data from DDragon
     responseSummonerData = requestSummonerData(region, summonerName, APIKey)
@@ -378,7 +378,7 @@ def player(request):
             }
         )
 
-        # Get match information of summoner
+        # Get match information of current summoner
         for i in matchListInfo['matchDetailInfox']:
             if matchListInfo['matchDetailInfox'][i]['summonername'] == responseSummonerData['name']:
                 participantId = matchListInfo['matchDetailInfox'][i]['participantid']
@@ -650,7 +650,6 @@ def player(request):
         'avgDmgPart': avgDmgPart,
         'avgKP': avgKP,
         'avgGoldPart': avgGoldPart,
-        'sumName': sumName,
     }
 
     if bool(responseRankedData)== True:

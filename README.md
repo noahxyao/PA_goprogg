@@ -16,9 +16,12 @@ Things to keep in mind when new patches release:
 * DRG%, HLD%, BN% for analysing objective control, but generally higher for winning games
 
 ## Further Things to be done:
-
-* Integrate DB for faster processing, also being independent from Riot API limits
-* Look into setting up virtualenv or Pipenv to get a cleaner requirements.txt
+* DB related
+    * Import Timeline API Data to database
+        * set up auto updater
+        * migrate new table to django
+        * update on PA
+    * Implement method to enter new summoners into database and pull quick data of 20 games
 * Add tabs for champ mastery, etc
 * Add tab for education on stats, how to read them, graphs
 * Add More interesting stats: 

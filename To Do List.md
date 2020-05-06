@@ -1,8 +1,4 @@
 #To Do List
-
-
-
-
 * DS: Look for player KPIs from the streams and find out how to calc them with the given data
 	-KDA
 	-KP
