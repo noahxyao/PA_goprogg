@@ -350,42 +350,56 @@ async def main():
 						firstInhibitorAssist 				= matchInfoData['participants'][player]['stats']['firstInhibitorAssist']
 						neutralMinionsKilledTeamJungle 		= matchInfoData['participants'][player]['stats']['neutralMinionsKilledTeamJungle']
 						neutralMinionsKilledEnemyJungle 	= matchInfoData['participants'][player]['stats']['neutralMinionsKilledEnemyJungle']
-						wardsPlaced 						= matchInfoData['participants'][player]['stats']['wardsPlaced']
-						wardsKilled 						= matchInfoData['participants'][player]['stats']['wardsKilled']
-						summonerId 							= matchInfoData['participantIdentities'][player]['player']['summonerId']
 						firstTowerKill 						= matchInfoData['participants'][player]['stats']['firstTowerKill']
 						firstTowerAssist 					= matchInfoData['participants'][player]['stats']['firstTowerAssist']
-						firstBloodKill 						= matchInfoData['participants'][player]['stats']['firstBloodKill']
-						firstBloodAssist 					= matchInfoData['participants'][player]['stats']['firstBloodAssist']
-						perk0 								= matchInfoData['participants'][player]['stats']['perk0']
-						perk1 								= matchInfoData['participants'][player]['stats']['perk1']
-						perk2 								= matchInfoData['participants'][player]['stats']['perk2']
-						perk3 								= matchInfoData['participants'][player]['stats']['perk3']
-						perk4 								= matchInfoData['participants'][player]['stats']['perk4']
-						perk5 								= matchInfoData['participants'][player]['stats']['perk5']
-						perkPrimaryStyle 					= matchInfoData['participants'][player]['stats']['perkPrimaryStyle']
-						perkSubStyle 						= matchInfoData['participants'][player]['stats']['perkSubStyle']
 
 					except KeyError:
 						firstInhibitorKill 					= False
 						firstInhibitorAssist 				= False
 						neutralMinionsKilledTeamJungle 		= 0
 						neutralMinionsKilledEnemyJungle 	= 0
-						wardsPlaced 						= 0
-						wardsKilled 						= 0
-						summonerId 							= ""
 						firstTowerKill 						= False
 						firstTowerAssist 					= False
-						firstBloodKill 						= False
-						firstBloodAssist 					= False
-						perk0 								= None
-						perk1 								= None
-						perk2 								= None
-						perk3 								= None
-						perk4 								= None
-						perk5 								= None
-						perkPrimaryStyle 					= None
-						perkSubStyle 						= None
+
+					try:
+						firstBloodKill = matchInfoData['participants'][player]['stats']['firstBloodKill']
+						firstBloodAssist = matchInfoData['participants'][player]['stats']['firstBloodAssist']
+					except KeyError:
+						firstBloodKill = False
+						firstBloodAssist = False
+
+					try:
+						summonerId = matchInfoData['participantIdentities'][player]['player']['summonerId']
+					except KeyError:
+						summonerId = ""
+
+					try:
+						wardsPlaced = matchInfoData['participants'][player]['stats']['wardsPlaced']
+						wardsKilled = matchInfoData['participants'][player]['stats']['wardsKilled']
+
+					except KeyError:
+						wardsPlaced = 0
+						wardsKilled = 0
+
+					try:
+						perk0 = matchInfoData['participants'][player]['stats']['perk0']
+						perk1 = matchInfoData['participants'][player]['stats']['perk1']
+						perk2 = matchInfoData['participants'][player]['stats']['perk2']
+						perk3 = matchInfoData['participants'][player]['stats']['perk3']
+						perk4 = matchInfoData['participants'][player]['stats']['perk4']
+						perk5 = matchInfoData['participants'][player]['stats']['perk5']
+						perkPrimaryStyle = matchInfoData['participants'][player]['stats']['perkPrimaryStyle']
+						perkSubStyle = matchInfoData['participants'][player]['stats']['perkSubStyle']
+
+					except KeyError:
+						perk0 = None
+						perk1 = None
+						perk2 = None
+						perk3 = None
+						perk4 = None
+						perk5 = None
+						perkPrimaryStyle = None
+						perkSubStyle = None
 
 					#Insert imported matchParticipant Data to SQL Database
 					cursor.execute("""INSERT INTO MatchParticipant_V4
